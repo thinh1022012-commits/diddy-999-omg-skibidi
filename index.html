@@ -7,10 +7,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- GIỮ NGUYÊN GIAO DIỆN CŨ --- */
+        /* --- STYLE MOTION ĐẸP --- */
         :root { --pri: #4e54c8; --sec: #8f94fb; --bg: #f4f6f9; }
         body { font-family: 'Segoe UI', sans-serif; background: #eef2f5; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
+        #loading { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:10000; display:flex; justify-content:center; align-items:center; flex-direction:column; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--pri); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         #loginWrap { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(5px); display:flex; justify-content:center; align-items:center; z-index:999; }
         .login-box { background:white; padding:40px; border-radius:15px; width:380px; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.2); }
         
@@ -19,12 +23,11 @@
         .content { flex:1; padding:30px; overflow-y:auto; background: var(--bg); }
         
         .user-panel { padding:20px; background:linear-gradient(135deg, var(--pri), var(--sec)); color:white; display:flex; align-items:center; gap:15px; }
-        .menu-scroll { flex:1; overflow-y:auto; padding:10px; }
         .menu-cat { font-size:11px; font-weight:bold; color:#888; text-transform:uppercase; margin:15px 0 5px 10px; }
         .menu-item { padding:12px 15px; border-radius:8px; cursor:pointer; display:flex; gap:12px; align-items:center; color:#555; font-weight:600; transition:0.2s; }
         .menu-item:hover, .menu-item.active { background:#eef2ff; color:var(--pri); }
         
-        .card { background:white; border-radius:12px; padding:25px; margin-bottom:20px; box-shadow:0 2px 10px rgba(0,0,0,0.03); animation: slideIn 0.4s ease; }
+        .card { background:white; border-radius:12px; padding:25px; margin-bottom:20px; box-shadow:0 2px 10px rgba(0,0,0,0.03); animation: slideIn 0.4s ease; position: relative; }
         @keyframes slideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
         
         input, select, textarea { width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-bottom:10px; outline:none; box-sizing:border-box; }
@@ -45,20 +48,27 @@
 
         .badge { padding:4px 10px; border-radius:20px; font-size:11px; font-weight:bold; color:white; }
         .bg-ok { background:#00b894; } .bg-wait { background:#fdcb6e; color:#333; } .bg-no { background:#ff7675; }
+
+        /* REPLY MODAL & SLASH MENU */
+        #replyModal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 10000; }
+        .reply-box { background: white; width: 500px; border-radius: 15px; padding: 25px; position: relative; }
+        #slashMenu { position: absolute; bottom: 85px; left: 25px; width: 250px; background: white; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; z-index: 10001; }
+        .slash-item { padding: 12px 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #f9f9f9; }
+        .slash-item:hover { background: #f0f2ff; color: var(--pri); }
     </style>
 </head>
 <body>
 
+    <div id="loading" style="display:none"><div class="spinner"></div><p style="margin-top:10px; font-weight:bold; color:var(--pri)">Đang đồng bộ dữ liệu Online...</p></div>
+
     <div id="loginWrap">
         <div class="login-box">
             <h2 style="color:var(--pri); margin-bottom:5px">THỊNH ĐZ EDU</h2>
-            <p style="color:#888; font-size:13px; margin-bottom:25px">Quản lý Lớp 8B - Năm học 2025-2026</p>
-            <input id="user" placeholder="Tên đăng nhập (gv / m.an, d.anh...)">
+            <p style="color:#888; font-size:13px; margin-bottom:25px">Hệ thống Online Lớp 8B (42 Học sinh)</p>
+            <input id="user" placeholder="Tên đăng nhập (gv / m.an / d.anh...)">
             <input id="pass" type="password" placeholder="Mật khẩu (123)">
-            <button class="btn" style="width:100%" onclick="login()">Đăng Nhập</button>
-            <div style="margin-top:15px; font-size:12px; color:#666">
-                <i>Tài khoản mẫu: <b>m.an</b> (Minh An), <b>d.anh</b> (Diệu Anh)...</i>
-            </div>
+            <button class="btn" style="width:100%" onclick="login()">Đăng Nhập Hệ Thống</button>
+            <p style="font-size:11px; color:#aaa; margin-top:15px;">Dữ liệu được lưu trữ an toàn trên Google Cloud</p>
         </div>
     </div>
 
@@ -68,113 +78,110 @@
                 <div style="width:45px; height:45px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center"><i class="fa fa-user"></i></div>
                 <div><div style="font-weight:bold" id="uName">User</div><small id="uRole">Role</small></div>
             </div>
-            <div class="menu-scroll" id="menuArea"></div>
+            <div class="menu-scroll" id="menuArea" style="flex:1; overflow-y:auto; padding:10px;"></div>
             <div style="padding:15px; border-top:1px solid #eee">
+                <button class="btn" onclick="syncData()" style="width:100%; margin-bottom:10px; background:#00b894"><i class="fa fa-sync"></i> Đồng bộ dữ liệu mới</button>
                 <button onclick="location.reload()" class="btn" style="width:100%; background:#fff; color:#ff7675; border:1px solid #ff7675"><i class="fa fa-power-off"></i> Đăng xuất</button>
             </div>
         </div>
         <div class="content" id="mainContent"></div>
     </div>
 
+    <div id="replyModal">
+        <div class="reply-box">
+            <h3 style="margin-top:0; color:var(--pri)">💬 Phản Hồi Đơn</h3>
+            <div style="margin-bottom: 15px; font-weight: bold;">Trạng thái: <span id="statusPreview" style="background:#eee; padding:3px 8px; border-radius:5px">Chưa chọn</span></div>
+            <textarea id="replyTxt" style="width:100%; height:100px; padding:15px; border:2px solid #e0e0e0; border-radius:10px; resize:none" placeholder="Gõ dấu / để chọn lệnh nhanh (Đồng ý/Không)..."></textarea>
+            <div id="slashMenu">
+                <div class="slash-item" onclick="selectSlash('Đã duyệt', 'Đồng ý')"><i class="fa fa-check-circle" style="color:#00b894"></i> <b>/dongy</b></div>
+                <div class="slash-item" onclick="selectSlash('Hủy', 'Không đồng ý')"><i class="fa fa-times-circle" style="color:#ff7675"></i> <b>/khong</b></div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:20px">
+                <button class="btn" style="background:#ddd; color:#333" onclick="document.getElementById('replyModal').style.display='none'">Đóng</button>
+                <button class="btn" onclick="submitReplyFinal()">Gửi Phản Hồi</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // --- 1. CẤU HÌNH WEBHOOK (Thay link của bạn) ---
-        const WH_PUBLIC = "https://discord.com/api/webhooks/1462374350341669191/PS9ts11QNh7Fe_Bm1rhuu0vfNE1aw1nHEMhSjTaFgmrOcDrS2Yj9e9yoiT2cmWTtFcc-";
-        const WH_PRIVATE = "https://discord.com/api/webhooks/1462374646837022806/UkCViqUB5WHvST6mv2xNDpZSVocrCuvmo6iQh0CNR4vfO2lt8F_pdo5s7Ee1I5Rn1Hjz";
-
-        // --- 2. HÀM TẠO USERNAME TỪ TÊN ---
-        function removeVietnameseTones(str) {
-            str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a"); 
-            str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e"); 
-            str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i"); 
-            str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o"); 
-            str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u"); 
-            str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y"); 
-            str = str.replace(/đ/g,"d");
-            str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
-            str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
-            str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
-            str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
-            str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
-            str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
-            str = str.replace(/Đ/g, "D");
-            return str;
-        }
-
-        function createUsername(fullName) {
-            let cleanName = removeVietnameseTones(fullName).toLowerCase().trim();
-            let parts = cleanName.split(/\s+/); // Tách các từ
-            if (parts.length < 2) return cleanName; // Tên ngắn quá giữ nguyên
-            
-            let firstName = parts[parts.length - 1]; // Tên (An)
-            let middleName = parts[parts.length - 2]; // Tên đệm (Minh)
-            let initial = middleName.charAt(0); // Chữ cái đầu tên đệm (m)
-            
-            return `${initial}.${firstName}`; // m.an
-        }
-
-        // --- 3. DATA HỌC SINH (42 EM) ---
-        const rawStudents = [
-            'Bùi Vũ Minh An', 'Trương Thị Diệu Anh', 'Lương Gia Bảo', 'Ê Ban Any Tùng', 'Nguyễn Cao Trường Hải', 
-            'Đỗ Ngọc Hân', 'Đinh Thị Bích Hiền', 'Lê Văn Hiếu', 'Huỳnh Nguyễn Minh Hoàng', 'Lê Ngọc Hoàng', 
-            'Dương Quốc Khải', 'Nguyễn Ngọc Thiên Kim', 'Huỳnh Cao Nhật Lâm', 'Nguyễn Quang Long', 'TRIỆU MẪN', 
-            'Tăng Hữu Nam', 'Nguyễn Thùy Bảo Ngân', 'Nguyễn Trần Ngọc Ngân', 'Nguyễn Hoàng Bảo Ngọc', 'Phạm Minh Phước', 
-            'Lê Hoàng Quân', 'Nguyễn Đăng Quân', 'Trần Quốc Quân', 'Nguyễn Thục Quyên', 'Tống Thanh Thanh', 
-            'Lê Văn Thảo', 'Trần Bảo Thắng', 'Trần Thắng', 'Lê Trần Phúc Thiên', 'Lê Thế Thịnh', 
-            'Ngô Nguyễn Bảo Thịnh', 'Lương Nguyễn Anh Thư', 'Nguyễn Anh Thư', 'Trịnh Nguyễn Minh Thư', 'Trần Hoài Thương', 
-            'Nguyễn Ngọc Khánh Thy', 'Đỗ Phạm Huyền Trân', 'Trần Thị Bảo Trân', 'Hoàng Thủy Trúc', 'Nguyễn Huỳnh Như Trúc', 
-            'Phạm Thanh Trung', 'Võ Hoàng Thụy Vân'
-        ];
-
-        // Tự động tạo usersDB với ID đẹp và xử lý trùng
-        const usersDB = [
-            { u: 'admin', p: '123', n: 'Admin Hệ Thống', r: 'admin', c: 'ALL' },
-            { u: 'gv', p: '123', n: 'GVCN Lớp 8B', r: 'teacher', c: '8B' }
-        ];
+        // --- 1. CẤU HÌNH API MỚI NHẤT CỦA BẠN ---
         
-        const studentList = [];
-        const usedIds = {}; // Để check trùng
+        // LINK GOOGLE SHEETS API VỪA CUNG CẤP:
+        const API_URL = "https://script.google.com/macros/s/AKfycbxblDPpUu6rd2duywYrlMv-mRKfrktQSzW3h_XQTNUjAXpEKe-rh_W4kF3Vez1RC802/exec"; 
 
-        rawStudents.forEach((name, index) => {
-            let baseId = createUsername(name);
-            let finalId = baseId;
-            
-            // Xử lý nếu trùng ID (ví dụ 2 bạn tên Thư -> a.thu và a.thu1)
-            if (usedIds[baseId]) {
-                finalId = baseId + usedIds[baseId];
-                usedIds[baseId]++;
-            } else {
-                usedIds[baseId] = 1;
-            }
+        // 🔴 DISCORD WEBHOOKS (Đã kết nối)
+        const WH_PUBLIC = "https://discord.com/api/webhooks/1456305070181449789/gySnBocRkplcH8UrQvWpnDkg_8472oeOUFCjgOh23NkaGKbMFd7_crtncR5CF44D9lk7?wait=true";
+        const WH_PRIVATE = "https://discord.com/api/webhooks/1456659542699151598/j0LjBOW3wUnNN0p7lWeL5kvbfC4iITGuw5tZ47AWzVluPnsom1qrGGrKMRg3F1cIRRrY?wait=true";
 
-            // Thêm vào DB user để đăng nhập
-            usersDB.push({ u: finalId, p: '123', n: name, r: 'student', c: '8B' });
-            
-            // Thêm vào danh sách để GV chấm điểm (có lưu ID để khớp)
-            studentList.push({ id: finalId, name: name });
+        // --- 2. DATA (42 HỌC SINH 8B) ---
+        const rawStudents = ['Bùi Vũ Minh An','Trương Thị Diệu Anh','Lương Gia Bảo','Ê Ban Any Tùng','Nguyễn Cao Trường Hải','Đỗ Ngọc Hân','Đinh Thị Bích Hiền','Lê Văn Hiếu','Huỳnh Nguyễn Minh Hoàng','Lê Ngọc Hoàng','Dương Quốc Khải','Nguyễn Ngọc Thiên Kim','Huỳnh Cao Nhật Lâm','Nguyễn Quang Long','TRIỆU MẪN','Tăng Hữu Nam','Nguyễn Thùy Bảo Ngân','Nguyễn Trần Ngọc Ngân','Nguyễn Hoàng Bảo Ngọc','Phạm Minh Phước','Lê Hoàng Quân','Nguyễn Đăng Quân','Trần Quốc Quân','Nguyễn Thục Quyên','Tống Thanh Thanh','Lê Văn Thảo','Trần Bảo Thắng','Trần Thắng','Lê Trần Phúc Thiên','Lê Thế Thịnh','Ngô Nguyễn Bảo Thịnh','Lương Nguyễn Anh Thư','Nguyễn Anh Thư','Trịnh Nguyễn Minh Thư','Trần Hoài Thương','Nguyễn Ngọc Khánh Thy','Đỗ Phạm Huyền Trân','Trần Thị Bảo Trân','Hoàng Thủy Trúc','Nguyễn Huỳnh Như Trúc','Phạm Thanh Trung','Võ Hoàng Thụy Vân'];
+        
+        function cleanName(str) { str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a"); str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e"); str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i"); str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o"); str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u"); str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y"); str = str.replace(/đ/g,"d"); return str; }
+        function genId(name) { let clean = cleanName(name).toLowerCase().trim().split(/\s+/); if(clean.length<2) return clean[0]; return clean[clean.length-2].charAt(0) + '.' + clean[clean.length-1]; }
+
+        const usersDB = [{u:'admin',p:'123',n:'Admin',r:'admin',c:'ALL'}, {u:'gv',p:'123',n:'GVCN 8B',r:'teacher',c:'8B'}];
+        const studentList = []; const used = {};
+        rawStudents.forEach(n => {
+            let base = genId(n); let id = used[base] ? base + used[base] : base;
+            if(used[base]) used[base]++; else used[base]=1;
+            usersDB.push({u:id, p:'123', n:n, r:'student', c:'8B'});
+            studentList.push({id:id, name:n});
         });
 
-        // console.log(usersDB); // Bật cái này lên F12 để xem danh sách tài khoản nếu cần
-
-        const DB = {
-            users: usersDB,
-            students: studentList, 
-            reqs: JSON.parse(localStorage.getItem('tdz_8b_v2_reqs')) || [],
-            weekly: JSON.parse(localStorage.getItem('tdz_8b_v2_week')) || []
-        };
+        // CẤU TRÚC DỮ LIỆU ĐỂ LƯU ONLINE
+        let DB = { reqs: [], weekly: [] };
         let curr = null;
 
-        function save() {
-            localStorage.setItem('tdz_8b_v2_reqs', JSON.stringify(DB.reqs));
-            localStorage.setItem('tdz_8b_v2_week', JSON.stringify(DB.weekly));
+        // --- 3. ONLINE SYNC FUNCTIONS ---
+        async function loadOnlineData() {
+            document.getElementById('loading').style.display = 'flex';
+            try {
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                if(data && !data.init) {
+                    DB = data; 
+                }
+            } catch(e) { console.error("Lỗi tải dữ liệu", e); }
+            document.getElementById('loading').style.display = 'none';
         }
 
-        // --- 4. CORE ---
-        function login() {
-            const u = document.getElementById('user').value.toLowerCase().trim(); // Cho phép nhập chữ hoa/thường
+        async function saveOnlineData() {
+            document.getElementById('loading').style.display = 'flex';
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', 
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(DB)
+                });
+            } catch(e) { console.error("Lỗi lưu dữ liệu", e); }
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        async function syncData() {
+            await loadOnlineData();
+            const activeItem = document.querySelector('.menu-item.active');
+            if(activeItem) activeItem.click();
+            else nav('rules');
+            alert("Đã cập nhật dữ liệu mới nhất từ máy chủ!");
+        }
+
+        // --- 4. CORE LOGIN & NAV ---
+        async function login() {
+            const u = document.getElementById('user').value.toLowerCase().trim();
             const p = document.getElementById('pass').value;
-            const f = DB.users.find(x => x.u == u && x.p == p);
-            if(f) { curr=f; document.getElementById('loginWrap').style.display='none'; document.getElementById('appWrap').style.display='flex'; document.getElementById('uName').innerText=f.n; document.getElementById('uRole').innerText=f.r.toUpperCase(); renderMenu(); nav('rules'); }
-            else alert('Sai thông tin! Hãy thử: m.an / 123');
+            const f = usersDB.find(x => x.u == u && x.p == p);
+            
+            if(f) { 
+                curr = f;
+                await loadOnlineData(); // Tải dữ liệu online khi login
+                document.getElementById('loginWrap').style.display='none'; 
+                document.getElementById('appWrap').style.display='flex'; 
+                document.getElementById('uName').innerText = f.n; 
+                document.getElementById('uRole').innerText = f.r.toUpperCase(); 
+                renderMenu(); nav('rules'); 
+            }
+            else alert('Sai thông tin! Hãy thử tài khoản hs: m.an / 123');
         }
 
         function renderMenu() {
@@ -186,6 +193,8 @@
 
         function nav(p) {
             const c = document.getElementById('mainContent'); c.innerHTML = '';
+            document.querySelectorAll('.menu-item').forEach(e=>e.classList.remove('active'));
+            if(event && event.currentTarget.classList) event.currentTarget.classList.add('active');
 
             if(p === 'rules') {
                 c.innerHTML = `<div style="display:flex; gap:20px"><div class="card" style="flex:1"><h3>🏛️ NỘI QUY TRƯỜNG</h3><ul><li>Đi học đúng giờ.</li><li>Lễ phép với thầy cô.</li></ul></div><div class="card" style="flex:1"><h3>🏫 NỘI QUY LỚP 8B</h3><ul><li>Vệ sinh sạch sẽ.</li><li>Không dùng điện thoại.</li></ul></div></div>`;
@@ -200,10 +209,10 @@
             }
             else if(p === 'approve') {
                 const list = DB.reqs.filter(r => r.cls === curr.c).reverse();
-                c.innerHTML = `<h2>✅ Duyệt Đơn (Lớp ${curr.c})</h2><div class="card"><table><thead><tr><th>HS</th><th>Loại</th><th>Ngày/Nội dung</th><th>Trạng thái</th><th>Xử lý</th></tr></thead><tbody>${list.map(r => `<tr><td><b>${r.sname}</b><br><small>${r.sid}</small></td><td>${r.secure?'🔒 ':''}${r.type}</td><td>${r.date}<br>${r.txt}</td><td><span class="badge ${r.st==='Đã duyệt'?'bg-ok':(r.st==='Hủy'?'bg-no':'bg-wait')}">${r.st}</span></td><td>${r.st==='Chờ'?`<button class="btn" style="padding:5px 10px;background:#00b894" onclick="process('${r.id}','Đã duyệt')">✔</button> <button class="btn" style="padding:5px 10px;background:#ff7675" onclick="process('${r.id}','Hủy')">✘</button>`:'OK'}</td></tr>`).join('')}</tbody></table></div>`;
+                c.innerHTML = `<h2>✅ Duyệt Đơn (Lớp ${curr.c})</h2><div class="card"><table><thead><tr><th>HS</th><th>Loại</th><th>Ngày/Nội dung</th><th>Trạng thái</th><th>Xử lý</th></tr></thead><tbody>${list.map(r => `<tr><td><b>${r.sname}</b><br><small>${r.sid}</small></td><td>${r.secure?'🔒 ':''}${r.type}</td><td>${r.date}<br>${r.txt}</td><td><span class="badge ${r.st==='Đã duyệt'?'bg-ok':(r.st==='Hủy'?'bg-no':'bg-wait')}">${r.st}</span></td><td>${r.st==='Chờ'?`<button class="btn" onclick="openReply('${r.id}')">Phản hồi</button>`:'Đã xử lý'}</td></tr>`).join('')}</tbody></table></div>`;
             }
             else if(p === 'grading') {
-                c.innerHTML = `<h2>✍️ Chấm Điểm Tuần</h2><div class="card"><div style="margin-bottom:15px"><select id="wSelect" onchange="loadWeekData()" style="width:150px"><option value="1">Tuần 1</option><option value="2">Tuần 2</option><option value="3">Tuần 3</option></select></div><table><thead><tr><th>User ID</th><th>Học sinh</th><th>Điểm</th><th>Xếp loại</th><th>Ghi chú</th></tr></thead><tbody id="gradeTable"></tbody></table><button class="btn" style="margin-top:20px" onclick="saveGrades()">LƯU KẾT QUẢ</button></div>`;
+                c.innerHTML = `<h2>✍️ Chấm Điểm Tuần</h2><div class="card"><div style="margin-bottom:15px"><select id="wSelect" onchange="loadWeekData()" style="width:150px"><option value="1">Tuần 1</option><option value="2">Tuần 2</option><option value="3">Tuần 3</option></select></div><table><thead><tr><th>ID</th><th>Học sinh</th><th>Điểm</th><th>Xếp loại</th><th>Ghi chú</th></tr></thead><tbody id="gradeTable"></tbody></table><button class="btn" style="margin-top:20px" onclick="saveGrades()">LƯU KẾT QUẢ</button></div>`;
                 loadWeekData();
             }
             else if(p === 'my_rank') {
@@ -211,7 +220,7 @@
                 c.innerHTML = `<h2>🏆 Điểm Thi Đua</h2><div class="card"><table><thead><tr><th>Tuần</th><th>Điểm</th><th>Xếp loại</th><th>Nhận xét</th></tr></thead><tbody>${myW.map(w => `<tr><td>Tuần ${w.week}</td><td><b>${w.score}</b></td><td><span class="badge ${w.rank==='Tốt'?'bg-ok':'bg-wait'}">${w.rank}</span></td><td>${w.note}</td></tr>`).join('')}</tbody></table></div>`;
             }
             else if(p === 'class_list') {
-                c.innerHTML = `<h2>Danh Sách Lớp 8B</h2><div class="card"><table><thead><tr><th>ID</th><th>Họ Tên</th><th>Mật khẩu</th></tr></thead><tbody>${DB.students.map(s => `<tr><td>${s.id}</td><td>${s.name}</td><td>123</td></tr>`).join('')}</tbody></table></div>`;
+                c.innerHTML = `<h2>Danh Sách Lớp 8B</h2><div class="card"><table><thead><tr><th>ID</th><th>Họ Tên</th><th>Mật khẩu</th></tr></thead><tbody>${studentList.map(s => `<tr><td>${s.id}</td><td>${s.name}</td><td>123</td></tr>`).join('')}</tbody></table></div>`;
             }
         }
 
@@ -223,9 +232,7 @@
             
             window.updateFooterDate = function(el) {
                 const d = new Date(el.value);
-                if(!isNaN(d.getTime())) {
-                    document.getElementById('footerDate').innerText = `Ngày ${d.getDate()} tháng ${d.getMonth()+1} năm ${d.getFullYear()}`;
-                }
+                if(!isNaN(d.getTime())) { document.getElementById('footerDate').innerText = `Ngày ${d.getDate()} tháng ${d.getMonth()+1} năm ${d.getFullYear()}`; }
             }
 
             let body = '';
@@ -252,7 +259,7 @@
                 type: tText, txt: txt, st: 'Chờ', reply: '', secure: isSecure, 
                 date: fmtDate 
             });
-            save();
+            await saveOnlineData(); // LƯU DỮ LIỆU LÊN GOOGLE SHEETS
 
             try {
                 await fetch(isSecure ? WH_PRIVATE : WH_PUBLIC, {
@@ -270,47 +277,85 @@
             alert('Đã gửi thành công!'); nav('mailbox');
         }
 
-        async function process(id, st) {
-            const note = prompt(`Nhập lời nhắn cho học sinh (Bắt buộc):`, st==='Đã duyệt'?'Đồng ý':'Lý do từ chối...');
-            if(!note) return alert('Bạn phải nhập lời nhắn!');
-            
-            const r = DB.reqs.find(x => x.id == id);
+        // --- 6. SLASH COMMAND & REPLY LOGIC ---
+        let currentReplyId = null;
+        let selectedStatus = null;
+
+        function openReply(id) {
+            currentReplyId = id; selectedStatus = null;
+            document.getElementById('replyModal').style.display = 'flex';
+            document.getElementById('replyTxt').value = ''; 
+            updateStatusPreview();
+            document.getElementById('slashMenu').style.display = 'none';
+        }
+
+        document.getElementById('replyTxt').addEventListener('input', function(e) {
+            const val = e.target.value;
+            const menu = document.getElementById('slashMenu');
+            if (val.trim() === '/' || val.endsWith(' /') || val.startsWith('/')) menu.style.display = 'block';
+            else menu.style.display = 'none';
+        });
+
+        function selectSlash(status, text) {
+            const txtBox = document.getElementById('replyTxt');
+            selectedStatus = status;
+            let currentVal = txtBox.value.replace(/\/\s*$/, '').replace(/^\/\s*/, '');
+            txtBox.value = currentVal.trim() === '' ? text + " " : currentVal.trim() + " " + text + " ";
+            document.getElementById('slashMenu').style.display = 'none';
+            txtBox.focus();
+            updateStatusPreview();
+        }
+
+        function updateStatusPreview() {
+            const el = document.getElementById('statusPreview');
+            if (!selectedStatus) { el.innerText = "Chưa chọn"; el.style.background = "#eee"; el.style.color = "#555"; } 
+            else if (selectedStatus === 'Đã duyệt') { el.innerText = "Duyệt"; el.style.background = "#00b894"; el.style.color = "#fff"; } 
+            else { el.innerText = "Hủy"; el.style.background = "#ff7675"; el.style.color = "#fff"; }
+        }
+
+        async function submitReplyFinal() {
+            const note = document.getElementById('replyTxt').value;
+            if (!note) return alert("Nhập nội dung!");
+            if (!selectedStatus) return alert("Dùng dấu / để chọn Đồng ý hoặc Hủy!");
+
+            const r = DB.reqs.find(x => x.id == currentReplyId);
             if(r) {
-                r.st = st; r.reply = note; save();
+                r.st = selectedStatus; r.reply = note;
+                await saveOnlineData(); // LƯU DỮ LIỆU LÊN GOOGLE SHEETS
+
                 try {
                     await fetch(r.secure ? WH_PRIVATE : WH_PUBLIC, {
                         method: 'POST', headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({
                             username: "THỊNH ĐZ BOT",
-                            embeds: [{ title: st==='Đã duyệt'?"✅ ĐÃ DUYỆT":"❌ TỪ CHỐI", description: `GV đã xử lý đơn của **${r.sname}**.\n💬 **Lời nhắn:** ${note}`, color: st==='Đã duyệt'?3066993:15158332 }]
+                            embeds: [{
+                                title: selectedStatus==='Đã duyệt' ? "✅ ĐÃ DUYỆT" : "❌ TỪ CHỐI",
+                                description: `GV đã trả lời trên web.\n💬 **Nội dung:** ${note}\n👤 **Học sinh:** ${r.sname}`,
+                                color: selectedStatus==='Đã duyệt' ? 3066993 : 15158332
+                            }]
                         })
                     });
                 } catch(e){}
+                document.getElementById('replyModal').style.display='none';
                 nav('approve');
             }
         }
 
-        // --- 6. LOGIC CHẤM ĐIỂM ---
+        // --- 7. CHẤM ĐIỂM TUẦN ---
         function loadWeekData() {
             const w = document.getElementById('wSelect').value;
             const tb = document.getElementById('gradeTable');
             tb.innerHTML = '';
             
-            DB.students.forEach(s => {
+            studentList.forEach(s => {
                 const old = DB.weekly.find(x => x.week == w && x.sid == s.id) || {};
-                tb.innerHTML += `<tr>
-                    <td><small style="color:#888">${s.id}</small></td>
-                    <td>${s.name}</td>
-                    <td><input type="number" id="s_${s.id}" value="${old.score||100}" style="width:60px"></td>
-                    <td><select id="r_${s.id}" style="width:100px"><option ${old.rank=='Tốt'?'selected':''}>Tốt</option><option ${old.rank=='Khá'?'selected':''}>Khá</option><option ${old.rank=='TB'?'selected':''}>TB</option></select></td>
-                    <td><input type="text" id="n_${s.id}" value="${old.note||''}" placeholder="Nhận xét..."></td>
-                </tr>`;
+                tb.innerHTML += `<tr><td><small>${s.id}</small></td><td>${s.name}</td><td><input type="number" id="s_${s.id}" value="${old.score||100}" style="width:60px"></td><td><select id="r_${s.id}" style="width:100px"><option ${old.rank=='Tốt'?'selected':''}>Tốt</option><option ${old.rank=='Khá'?'selected':''}>Khá</option><option ${old.rank=='TB'?'selected':''}>TB</option></select></td><td><input type="text" id="n_${s.id}" value="${old.note||''}" placeholder="Nhận xét..."></td></tr>`;
             });
         }
 
-        function saveGrades() {
+        async function saveGrades() {
             const w = document.getElementById('wSelect').value;
-            DB.students.forEach(s => {
+            studentList.forEach(s => {
                 const sc = document.getElementById(`s_${s.id}`).value;
                 const rk = document.getElementById(`r_${s.id}`).value;
                 const nt = document.getElementById(`n_${s.id}`).value;
@@ -318,7 +363,8 @@
                 if(idx > -1) DB.weekly.splice(idx, 1);
                 DB.weekly.push({ week: w, sid: s.id, score: sc, rank: rk, note: nt });
             });
-            save(); alert('Đã lưu điểm tuần ' + w);
+            await saveOnlineData(); // LƯU DỮ LIỆU LÊN GOOGLE SHEETS
+            alert('Đã lưu điểm tuần ' + w);
         }
     </script>
 </body>
