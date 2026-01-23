@@ -33,7 +33,7 @@
         .menu-item { padding:12px 15px; border-radius:8px; cursor:pointer; display:flex; gap:12px; align-items:center; color:#555; font-weight:600; transition:0.2s; }
         .menu-item:hover, .menu-item.active { background:#eef2ff; color:var(--pri); }
         
-        .card { background:white; border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 2px 10px rgba(0,0,0,0.03); animation: slideIn 0.4s ease; overflow-x: auto; /* Cuộn ngang trên đt */ }
+        .card { background:white; border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 2px 10px rgba(0,0,0,0.03); animation: slideIn 0.4s ease; overflow-x: auto; }
         @keyframes slideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
         
         input, select, textarea { width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-bottom:10px; outline:none; box-sizing:border-box; font-size: 14px; }
@@ -42,7 +42,7 @@
         .btn-sm { padding: 5px 10px; font-size: 11px; }
         .btn-warning { background: #f39c12; }
         
-        table { width:100%; border-collapse:collapse; margin-top:10px; min-width: 400px; /* Tránh vỡ bảng trên đt */ }
+        table { width:100%; border-collapse:collapse; margin-top:10px; min-width: 400px; }
         th { text-align:left; color:#777; font-size:12px; text-transform:uppercase; padding:10px; border-bottom:2px solid #eee; white-space: nowrap; }
         td { padding:12px 10px; border-bottom:1px solid #eee; vertical-align:middle; font-size: 14px; }
         
@@ -132,11 +132,15 @@
     </div>
 
     <script>
-        // --- 1. CẤU HÌNH API ĐÃ SỬA LỖI DISCORD ---
+        // --- 1. CẤU HÌNH API MỚI SIÊU ỔN ĐỊNH ---
         const API_URL = "https://script.google.com/macros/s/AKfycbxblDPpUu6rd2duywYrlMv-mRKfrktQSzW3h_XQTNUjAXpEKe-rh_W4kF3Vez1RC802/exec"; 
-        const PROXY = "https://corsproxy.io/?"; 
-        const WH_PUBLIC = PROXY + encodeURIComponent("https://discord.com/api/webhooks/1464166054916788305/aKeGJgfPnFcG0wVtnikSFK7PIMEt1WKttppL_MFkoOYkLlCyIrjjTuXnFHIVTClqHNzE");
-        const WH_PRIVATE = PROXY + encodeURIComponent("https://discord.com/api/webhooks/1464165610371022900/ArTlhSg1C1vsYU_nw2Y0AlmikDKfaq5f7hE7HsH3ocBv1AwawaVxe3AhnZkgzgvuXijS");
+        
+        // Cổng nối Proxy mới để vượt tường lửa Discord
+        const PROXY_URL = "https://api.codetabs.com/v1/proxy/?quest="; 
+        
+        // Link Gốc Discord
+        const RAW_WH_PUBLIC = "https://discord.com/api/webhooks/1456305070181449789/gySnBocRkplcH8UrQvWpnDkg_8472oeOUFCjgOh23NkaGKbMFd7_crtncR5CF44D9lk7?wait=true";
+        const RAW_WH_PRIVATE = "https://discord.com/api/webhooks/1456659542699151598/j0LjBOW3wUnNN0p7lWeL5kvbfC4iITGuw5tZ47AWzVluPnsom1qrGGrKMRg3F1cIRRrY?wait=true";
 
         // --- 2. KHỞI TẠO USER ---
         const rawStudents = ['Bùi Vũ Minh An','Trương Thị Diệu Anh','Lương Gia Bảo','Ê Ban Any Tùng','Nguyễn Cao Trường Hải','Đỗ Ngọc Hân','Đinh Thị Bích Hiền','Lê Văn Hiếu','Huỳnh Nguyễn Minh Hoàng','Lê Ngọc Hoàng','Dương Quốc Khải','Nguyễn Ngọc Thiên Kim','Huỳnh Cao Nhật Lâm','Nguyễn Quang Long','TRIỆU MẪN','Tăng Hữu Nam','Nguyễn Thùy Bảo Ngân','Nguyễn Trần Ngọc Ngân','Nguyễn Hoàng Bảo Ngọc','Phạm Minh Phước','Lê Hoàng Quân','Nguyễn Đăng Quân','Trần Quốc Quân','Nguyễn Thục Quyên','Tống Thanh Thanh','Lê Văn Thảo','Trần Bảo Thắng','Trần Thắng','Lê Trần Phúc Thiên','Lê Thế Thịnh','Ngô Nguyễn Bảo Thịnh','Lương Nguyễn Anh Thư','Nguyễn Anh Thư','Trịnh Nguyễn Minh Thư','Trần Hoài Thương','Nguyễn Ngọc Khánh Thy','Đỗ Phạm Huyền Trân','Trần Thị Bảo Trân','Hoàng Thủy Trúc','Nguyễn Huỳnh Như Trúc','Phạm Thanh Trung','Võ Hoàng Thụy Vân'];
@@ -163,7 +167,6 @@
         }
         function hideLoading() { document.getElementById('loading').style.display = 'none'; }
 
-        // --- HÀM TOGGLE SIDEBAR MOBILE ---
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('overlay');
@@ -230,7 +233,6 @@
         }
 
         function nav(p) {
-            // Tự động đóng menu trên đt khi chọn trang
             document.getElementById('sidebar').classList.remove('active');
             document.getElementById('overlay').classList.remove('active');
 
@@ -296,7 +298,7 @@
             a.innerHTML = `<div class="legal-paper">${h}${body}<br><br><div style="text-align:right"><i id="footerDate">Ngày... tháng... năm...</i><br><b>Người làm đơn</b><br><br>${curr.n}</div></div>`;
         }
 
-        // --- GỬI ĐƠN & GỬI LÊN DISCORD ---
+        // --- GỬI ĐƠN LÊN DISCORD (FIX LỖI 100%) ---
         async function sendForm() {
             const txt = document.getElementById('fTxt').value;
             const dateVal = document.getElementById('datePicker').value;
@@ -315,39 +317,38 @@
             });
             await saveOnlineData("Đang lưu đơn và gửi lên Discord...");
 
-            // 2. Gửi Webhook Discord (Qua Proxy)
+            // 2. Gửi Webhook Discord (Sử dụng Proxy Codetabs)
             try {
-                const discordUrl = isSecure ? WH_PRIVATE : WH_PUBLIC;
-                
-                await fetch(discordUrl, {
+                const rawUrl = isSecure ? RAW_WH_PRIVATE : RAW_WH_PUBLIC;
+                const proxyUrl = PROXY_URL + rawUrl;
+
+                const response = await fetch(proxyUrl, {
                     method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         username: "THỊNH ĐZ BOT",
                         avatar_url: "https://i.imgur.com/4M34hi2.png",
                         embeds: [{
                             title: isSecure ? "🔒 VĂN BẢN MẬT (CAM KẾT/TƯỜNG TRÌNH)" : "📝 ĐƠN XIN NGHỈ HỌC",
-                            description: `**👤 Học sinh:** ${curr.n}\n**🆔 ID:** ${curr.u}\n**📅 Ngày/Lý do:** ${fmtDate}\n\n**📄 Nội dung chi tiết:**\n> ${txt}`,
+                            description: `**👤 Học sinh:** ${curr.n}\n**🆔 ID:** ${curr.u}\n**📅 Ngày:** ${fmtDate}\n\n**📄 Nội dung chi tiết:**\n> ${txt}`,
                             color: isSecure ? 15158332 : 3066993,
                             timestamp: new Date().toISOString()
                         }]
                     })
                 });
 
-                // 3. Thông báo thành công
+                if (!response.ok) throw new Error(`Lỗi Proxy: ${response.status}`);
                 alert('✅ Đã gửi đơn và thông báo thành công lên Discord!');
+
             } catch(e) {
                 console.error("Lỗi gửi Discord:", e);
-                alert('✅ Đã gửi lên web nhưng Discord bị nghẽn mạng!');
+                alert(`⚠️ Discord bị lỗi mạng: ${e.message}\n(Đơn vẫn được lưu vào hệ thống web)`);
             }
 
             nav('mailbox');
         }
 
-        // --- 7. SLASH COMMAND & REPLY ---
+        // --- 7. SLASH COMMAND & REPLY CỦA GIÁO VIÊN ---
         let currentReplyId = null; let selectedStatus = null;
 
         function openReply(id) {
@@ -381,6 +382,7 @@
             else { el.innerText = "Hủy"; el.style.background = "#ff7675"; el.style.color = "#fff"; }
         }
 
+        // --- GIÁO VIÊN TRẢ LỜI VÀ BÁO LÊN DISCORD ---
         async function submitReplyFinal() {
             const note = document.getElementById('replyTxt').value;
             if (!note) return alert("Nhập nội dung!");
@@ -391,19 +393,29 @@
                 r.st = selectedStatus; r.reply = note;
                 await saveOnlineData("Đang gửi phản hồi...");
 
+                // Gửi Webhook Discord (Sử dụng Proxy Codetabs)
                 try {
-                    await fetch(r.secure ? WH_PRIVATE : WH_PUBLIC, {
-                        method: 'POST', headers: {'Content-Type': 'application/json'},
+                    const rawUrl = r.secure ? RAW_WH_PRIVATE : RAW_WH_PUBLIC;
+                    const proxyUrl = PROXY_URL + rawUrl;
+
+                    await fetch(proxyUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             username: "THỊNH ĐZ BOT",
+                            avatar_url: "https://i.imgur.com/4M34hi2.png",
                             embeds: [{
-                                title: selectedStatus==='Đã duyệt' ? "✅ ĐÃ DUYỆT" : "❌ TỪ CHỐI",
-                                description: `GV đã trả lời trên web.\n💬 **Nội dung:** ${note}\n👤 **Học sinh:** ${r.sname}`,
-                                color: selectedStatus==='Đã duyệt' ? 3066993 : 15158332
+                                title: selectedStatus==='Đã duyệt' ? "✅ GV ĐÃ DUYỆT ĐƠN" : "❌ GV TỪ CHỐI ĐƠN",
+                                description: `**👤 Học sinh:** ${r.sname}\n\n💬 **Lời nhắn từ Giáo viên:**\n> ${note}`,
+                                color: selectedStatus==='Đã duyệt' ? 3066993 : 15158332,
+                                timestamp: new Date().toISOString()
                             }]
                         })
                     });
-                } catch(e){}
+                } catch(e) {
+                    console.error("Lỗi gửi Discord khi Reply:", e);
+                }
+
                 document.getElementById('replyModal').style.display='none';
                 nav('approve');
             }
@@ -436,4 +448,3 @@
     </script>
 </body>
 </html>
-
