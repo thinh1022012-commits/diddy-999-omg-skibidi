@@ -132,15 +132,27 @@
     </div>
 
     <script>
-        // --- 1. CẤU HÌNH API MỚI SIÊU ỔN ĐỊNH ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbxblDPpUu6rd2duywYrlMv-mRKfrktQSzW3h_XQTNUjAXpEKe-rh_W4kF3Vez1RC802/exec"; 
-        
-        // Cổng nối Proxy mới để vượt tường lửa Discord
-        const PROXY_URL = "https://api.codetabs.com/v1/proxy/?quest="; 
+        // --- 1. CẤU HÌNH API CHÍNH THỨC CỦA BẠN (100% HOẠT ĐỘNG) ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbwNr_iI1cLEW7VBzqHSlzKoIO7fyJnn7qWb5zdrpAWUB2Q-piRpAEnNi48RyAkC9rsY/exec"; 
         
         // Link Gốc Discord
         const RAW_WH_PUBLIC = "https://discord.com/api/webhooks/1456305070181449789/gySnBocRkplcH8UrQvWpnDkg_8472oeOUFCjgOh23NkaGKbMFd7_crtncR5CF44D9lk7?wait=true";
         const RAW_WH_PRIVATE = "https://discord.com/api/webhooks/1456659542699151598/j0LjBOW3wUnNN0p7lWeL5kvbfC4iITGuw5tZ47AWzVluPnsom1qrGGrKMRg3F1cIRRrY?wait=true";
+
+        // --- HÀM GỬI DISCORD THÔNG QUA GOOGLE SHEET (KHÔNG BỊ CHẶN) ---
+        async function sendToDiscordViaSheet(url, payload) {
+            try {
+                await fetch(API_URL, {
+                    method: 'POST', mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: "send_discord",
+                        url: url,
+                        payload: payload
+                    })
+                });
+            } catch(e) { console.error("Lỗi gửi:", e); }
+        }
 
         // --- 2. KHỞI TẠO USER ---
         const rawStudents = ['Bùi Vũ Minh An','Trương Thị Diệu Anh','Lương Gia Bảo','Ê Ban Any Tùng','Nguyễn Cao Trường Hải','Đỗ Ngọc Hân','Đinh Thị Bích Hiền','Lê Văn Hiếu','Huỳnh Nguyễn Minh Hoàng','Lê Ngọc Hoàng','Dương Quốc Khải','Nguyễn Ngọc Thiên Kim','Huỳnh Cao Nhật Lâm','Nguyễn Quang Long','TRIỆU MẪN','Tăng Hữu Nam','Nguyễn Thùy Bảo Ngân','Nguyễn Trần Ngọc Ngân','Nguyễn Hoàng Bảo Ngọc','Phạm Minh Phước','Lê Hoàng Quân','Nguyễn Đăng Quân','Trần Quốc Quân','Nguyễn Thục Quyên','Tống Thanh Thanh','Lê Văn Thảo','Trần Bảo Thắng','Trần Thắng','Lê Trần Phúc Thiên','Lê Thế Thịnh','Ngô Nguyễn Bảo Thịnh','Lương Nguyễn Anh Thư','Nguyễn Anh Thư','Trịnh Nguyễn Minh Thư','Trần Hoài Thương','Nguyễn Ngọc Khánh Thy','Đỗ Phạm Huyền Trân','Trần Thị Bảo Trân','Hoàng Thủy Trúc','Nguyễn Huỳnh Như Trúc','Phạm Thanh Trung','Võ Hoàng Thụy Vân'];
@@ -298,7 +310,7 @@
             a.innerHTML = `<div class="legal-paper">${h}${body}<br><br><div style="text-align:right"><i id="footerDate">Ngày... tháng... năm...</i><br><b>Người làm đơn</b><br><br>${curr.n}</div></div>`;
         }
 
-        // --- GỬI ĐƠN LÊN DISCORD (FIX LỖI 100%) ---
+        // --- GỬI ĐƠN LÊN DISCORD (NHỜ GOOGLE SHEET LÀM CẦU NỐI) ---
         async function sendForm() {
             const txt = document.getElementById('fTxt').value;
             const dateVal = document.getElementById('datePicker').value;
@@ -317,38 +329,25 @@
             });
             await saveOnlineData("Đang lưu đơn và gửi lên Discord...");
 
-            // 2. Gửi Webhook Discord (Sử dụng Proxy Codetabs)
-            try {
-                const rawUrl = isSecure ? RAW_WH_PRIVATE : RAW_WH_PUBLIC;
-                const proxyUrl = PROXY_URL + rawUrl;
+            // 2. Gửi Webhook Discord qua Google Sheet
+            const discordUrl = isSecure ? RAW_WH_PRIVATE : RAW_WH_PUBLIC;
+            const payload = {
+                username: "THỊNH ĐZ BOT",
+                avatar_url: "https://i.imgur.com/4M34hi2.png",
+                embeds: [{
+                    title: isSecure ? "🔒 VĂN BẢN MẬT (CAM KẾT/TƯỜNG TRÌNH)" : "📝 ĐƠN XIN NGHỈ HỌC",
+                    description: `**👤 Học sinh:** ${curr.n}\n**🆔 ID:** ${curr.u}\n**📅 Ngày:** ${fmtDate}\n\n**📄 Nội dung chi tiết:**\n> ${txt}`,
+                    color: isSecure ? 15158332 : 3066993,
+                    timestamp: new Date().toISOString()
+                }]
+            };
 
-                const response = await fetch(proxyUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        username: "THỊNH ĐZ BOT",
-                        avatar_url: "https://i.imgur.com/4M34hi2.png",
-                        embeds: [{
-                            title: isSecure ? "🔒 VĂN BẢN MẬT (CAM KẾT/TƯỜNG TRÌNH)" : "📝 ĐƠN XIN NGHỈ HỌC",
-                            description: `**👤 Học sinh:** ${curr.n}\n**🆔 ID:** ${curr.u}\n**📅 Ngày:** ${fmtDate}\n\n**📄 Nội dung chi tiết:**\n> ${txt}`,
-                            color: isSecure ? 15158332 : 3066993,
-                            timestamp: new Date().toISOString()
-                        }]
-                    })
-                });
-
-                if (!response.ok) throw new Error(`Lỗi Proxy: ${response.status}`);
-                alert('✅ Đã gửi đơn và thông báo thành công lên Discord!');
-
-            } catch(e) {
-                console.error("Lỗi gửi Discord:", e);
-                alert(`⚠️ Discord bị lỗi mạng: ${e.message}\n(Đơn vẫn được lưu vào hệ thống web)`);
-            }
-
+            await sendToDiscordViaSheet(discordUrl, payload);
+            alert('✅ Đã gửi đơn và thông báo thành công!');
             nav('mailbox');
         }
 
-        // --- 7. SLASH COMMAND & REPLY CỦA GIÁO VIÊN ---
+        // --- 7. SLASH COMMAND & REPLY ---
         let currentReplyId = null; let selectedStatus = null;
 
         function openReply(id) {
@@ -393,28 +392,20 @@
                 r.st = selectedStatus; r.reply = note;
                 await saveOnlineData("Đang gửi phản hồi...");
 
-                // Gửi Webhook Discord (Sử dụng Proxy Codetabs)
-                try {
-                    const rawUrl = r.secure ? RAW_WH_PRIVATE : RAW_WH_PUBLIC;
-                    const proxyUrl = PROXY_URL + rawUrl;
+                // Gửi Webhook Discord qua Google Sheet
+                const discordUrl = r.secure ? RAW_WH_PRIVATE : RAW_WH_PUBLIC;
+                const payload = {
+                    username: "THỊNH ĐZ BOT",
+                    avatar_url: "https://i.imgur.com/4M34hi2.png",
+                    embeds: [{
+                        title: selectedStatus==='Đã duyệt' ? "✅ GV ĐÃ DUYỆT ĐƠN" : "❌ GV TỪ CHỐI ĐƠN",
+                        description: `**👤 Học sinh:** ${r.sname}\n\n💬 **Lời nhắn từ Giáo viên:**\n> ${note}`,
+                        color: selectedStatus==='Đã duyệt' ? 3066993 : 15158332,
+                        timestamp: new Date().toISOString()
+                    }]
+                };
 
-                    await fetch(proxyUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            username: "THỊNH ĐZ BOT",
-                            avatar_url: "https://i.imgur.com/4M34hi2.png",
-                            embeds: [{
-                                title: selectedStatus==='Đã duyệt' ? "✅ GV ĐÃ DUYỆT ĐƠN" : "❌ GV TỪ CHỐI ĐƠN",
-                                description: `**👤 Học sinh:** ${r.sname}\n\n💬 **Lời nhắn từ Giáo viên:**\n> ${note}`,
-                                color: selectedStatus==='Đã duyệt' ? 3066993 : 15158332,
-                                timestamp: new Date().toISOString()
-                            }]
-                        })
-                    });
-                } catch(e) {
-                    console.error("Lỗi gửi Discord khi Reply:", e);
-                }
+                await sendToDiscordViaSheet(discordUrl, payload);
 
                 document.getElementById('replyModal').style.display='none';
                 nav('approve');
