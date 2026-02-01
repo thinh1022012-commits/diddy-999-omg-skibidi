@@ -11,7 +11,7 @@
         :root { --pri: #4e54c8; --sec: #8f94fb; --bg: #f4f6f9; }
         body { font-family: 'Segoe UI', sans-serif; background: #eef2f5; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        #loading { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:10000; display:flex; justify-content:center; align-items:center; flex-direction:column; }
+        #loading { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); z-index:10000; display:flex; justify-content:center; align-items:center; flex-direction:column; }
         .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--pri); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -35,7 +35,7 @@
         /* RESPONSIVE */
         @media (max-width: 768px) {
             .mobile-header { display: flex; }
-            .main-header { display: none; } /* Ẩn header desktop trên mobile */
+            .main-header { display: none; } 
             #appWrap { flex-direction: column; }
             .sidebar { position: absolute; top: 0; left: -260px; height: 100%; box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
             .sidebar.open { left: 0; }
@@ -89,12 +89,9 @@
         <div class="login-box">
             <h2 style="color:var(--pri); margin-bottom:5px">LỚP 8B</h2>
             <p style="color:#555; font-weight:bold; font-size:12px; margin-bottom:20px; text-transform:uppercase">Trường THCS Nguyễn Viết Xuân</p>
-            <input id="user" placeholder="Tên đăng nhập (gv / m.an...)">
-            <input id="pass" type="password" placeholder="Mật khẩu (123)">
+            <input id="user" placeholder="Tên đăng nhập">
+            <input id="pass" type="password" placeholder="Mật khẩu">
             <button class="btn" style="width:100%" onclick="login()">Đăng Nhập</button>
-            <div style="margin-top:15px; font-size:11px; color:#999">
-                Powered by Thịnh ĐZ Edu
-            </div>
         </div>
     </div>
 
@@ -144,7 +141,7 @@
 
     <script>
         // --- 1. CẤU HÌNH API ONLINE (Link GS của bạn) ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbxblDPpUu6rd2duywYrlMv-mRKfrktQSzW3h_XQTNUjAXpEKe-rh_W4kF3Vez1RC802/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbz5nIFpRMyvaDup5bwzRigkw7zr-n99mppGLY-u7QjLoZb_nv1GOErafeJAoZpU5jpn/exec"; 
         
         // --- 2. CẤU HÌNH DISCORD WEBHOOK ---
         const WH_PUBLIC = "https://discord.com/api/webhooks/1456305070181449789/gySnBocRkplcH8UrQvWpnDkg_8472oeOUFCjgOh23NkaGKbMFd7_crtncR5CF44D9lk7?wait=true";
@@ -164,6 +161,7 @@
         function cleanName(str) { str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a"); str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e"); str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i"); str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o"); str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u"); str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y"); str = str.replace(/đ/g,"d"); return str; }
         function genId(name) { let clean = cleanName(name).toLowerCase().trim().split(/\s+/); if(clean.length<2) return clean[0]; return clean[clean.length-2].charAt(0) + '.' + clean[clean.length-1]; }
 
+        // Khởi tạo mặc định nếu Server chưa có data
         const usersDB = [{u:'admin',p:'123',n:'Admin Hệ Thống',r:'admin',c:'ALL'}, {u:'gv',p:'123',n:'GVCN 8B',r:'teacher',c:'8B'}];
         const studentList = []; const used = {};
         rawStudents.forEach(n => {
@@ -189,7 +187,7 @@
                     DB.users = usersDB;
                     DB.reqs = [];
                     DB.weekly = [];
-                    await saveOnlineData();
+                    await saveOnlineData(); // Đẩy lên server lần đầu
                 } else {
                     DB = data;
                 }
@@ -233,7 +231,7 @@
                 document.getElementById('uRole').innerText = f.r.toUpperCase(); 
                 renderMenu(); nav('rules'); 
             }
-            else alert('Sai tài khoản! Thử: m.an / 123');
+            else alert('Sai tài khoản hoặc mật khẩu!');
         }
 
         function renderMenu() {
@@ -264,7 +262,7 @@
             }
             else if(p === 'approve') {
                 const list = DB.reqs.filter(r => curr.r === 'admin' || r.cls === curr.c).reverse();
-                c.innerHTML = `<h2>✅ Duyệt Đơn</h2><div class="card"><div style="overflow-x:auto"><table><thead><tr><th>HS</th><th>Loại</th><th>Ngày/Nội dung</th><th>Trạng thái</th><th>Xử lý</th></tr></thead><tbody>${list.map(r => `<tr><td><b>${r.sname}</b><br><small>${r.sid}</small></td><td>${r.secure?'🔒 ':''}${r.type}</td><td>${r.date}<br>${r.txt}</td><td><span class="badge ${r.st==='Đã duyệt'?'bg-ok':(r.st==='Hủy'?'bg-no':'bg-wait')}">${r.st}</span></td><td>${r.st==='Chờ' && curr.r !== 'admin' ?`<button class="btn" style="padding:5px 10px; font-size:11px" onclick="openReply('${r.id}')">Phản hồi</button>`:'Đã xử lý'}</td></tr>`).join('')}</tbody></table></div></div>`;
+                c.innerHTML = `<h2>✅ Duyệt Đơn</h2><div class="card"><div style="overflow-x:auto"><table><thead><tr><th>HS</th><th>Loại</th><th>Ngày/Nội dung</th><th>Trạng thái</th><th>Xử lý</th></tr></thead><tbody>${list.map(r => `<tr><td><b>${r.sname}</b><br><small>${r.sid}</small></td><td>${r.secure?'🔒 ':''}${r.type}</td><td>${r.date}<br>${r.txt}</td><td><span class="badge ${r.st==='Đã duyệt'?'bg-ok':(r.st==='Hủy'?'bg-no':'bg-wait')}">${r.st}</span></td><td>${r.st==='Chờ' && curr.r !== 'admin' ?`<button class="btn" style="padding:5px 10px; font-size:11px" onclick="openReply('${r.id}')">Phản hồi</button>`:(r.st==='Chờ'?'Đang chờ GVCN':'Đã xử lý')}</td></tr>`).join('')}</tbody></table></div></div>`;
             }
             else if(p === 'grading') {
                 c.innerHTML = `<h2>✍️ Chấm Điểm Tuần</h2><div class="card"><div style="margin-bottom:15px"><select id="wSelect" onchange="loadWeekData()" style="width:150px"><option value="1">Tuần 1</option><option value="2">Tuần 2</option><option value="3">Tuần 3</option></select></div><div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Học sinh</th><th>Điểm</th><th>Xếp loại</th><th>Ghi chú</th></tr></thead><tbody id="gradeTable"></tbody></table></div><button class="btn" style="margin-top:20px" onclick="saveGrades()">LƯU KẾT QUẢ</button></div>`;
