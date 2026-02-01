@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>THỊNH ĐZ EDU - Admin Control</title>
+    <title>Quản Lý Lớp 8B - Nguyễn Viết Xuân</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- STYLE --- */
+        /* --- STYLE MOTION & MOBILE --- */
         :root { --pri: #4e54c8; --sec: #8f94fb; --bg: #f4f6f9; }
         body { font-family: 'Segoe UI', sans-serif; background: #eef2f5; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
@@ -15,198 +15,198 @@
         .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--pri); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        #loginWrap { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(5px); display:flex; justify-content:center; align-items:center; z-index:999; }
-        .login-box { background:white; padding:30px; border-radius:15px; width:90%; max-width:380px; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.2); box-sizing: border-box; }
-        
         /* MOBILE HEADER */
-        #mobileHeader { display: none; background: linear-gradient(135deg, var(--pri), var(--sec)); color: white; padding: 15px; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 100; }
+        .mobile-header { display: none; background: var(--pri); color: white; padding: 15px; font-weight: bold; justify-content: space-between; align-items: center; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .menu-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
 
-        #appWrap { display:none; flex:1; overflow: hidden; position: relative; }
+        /* LOGIN */
+        #loginWrap { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(5px); display:flex; justify-content:center; align-items:center; z-index:999; }
+        .login-box { background:white; padding:30px; border-radius:15px; width:90%; max-width: 380px; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.2); }
         
-        /* SIDEBAR CHO RESPONSIVE */
-        .sidebar { width:260px; background:#fff; display:flex; flex-direction:column; border-right:1px solid #ddd; transition: 0.3s ease; height: 100%; }
-        .content { flex:1; padding:20px; overflow-y:auto; background: var(--bg); position: relative; }
+        /* APP LAYOUT */
+        #appWrap { display:none; height:100%; position: relative; }
+        .sidebar { width:260px; background:#fff; display:flex; flex-direction:column; border-right:1px solid #ddd; transition: 0.3s; z-index: 990; }
+        .content { flex:1; padding:20px; overflow-y:auto; background: var(--bg); -webkit-overflow-scrolling: touch; }
         
+        /* HEADER DESKTOP */
+        .main-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; border-bottom: 1px solid #eee; margin-bottom: 20px; border-radius: 10px; }
+        .school-name { font-weight: bold; font-size: 16px; color: var(--pri); text-transform: uppercase; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .mobile-header { display: flex; }
+            .main-header { display: none; } /* Ẩn header desktop trên mobile */
+            #appWrap { flex-direction: column; }
+            .sidebar { position: absolute; top: 0; left: -260px; height: 100%; box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
+            .sidebar.open { left: 0; }
+            .content { padding: 15px; }
+            .legal-paper { padding: 20px !important; font-size: 11pt !important; }
+            .legal-title { font-size: 13pt !important; }
+        }
+
         .user-panel { padding:20px; background:linear-gradient(135deg, var(--pri), var(--sec)); color:white; display:flex; align-items:center; gap:15px; }
         .menu-cat { font-size:11px; font-weight:bold; color:#888; text-transform:uppercase; margin:15px 0 5px 10px; }
         .menu-item { padding:12px 15px; border-radius:8px; cursor:pointer; display:flex; gap:12px; align-items:center; color:#555; font-weight:600; transition:0.2s; }
         .menu-item:hover, .menu-item.active { background:#eef2ff; color:var(--pri); }
         
-        .card { background:white; border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 2px 10px rgba(0,0,0,0.03); animation: slideIn 0.4s ease; overflow-x: auto; }
-        @keyframes slideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        .card { background:white; border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 2px 10px rgba(0,0,0,0.03); position: relative; overflow-x: auto; }
         
-        input, select, textarea { width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-bottom:10px; outline:none; box-sizing:border-box; font-size: 14px; }
-        .btn { background:var(--pri); color:white; padding:10px 20px; border:none; border-radius:6px; font-weight:bold; cursor:pointer; transition:0.2s; font-size: 14px; }
-        .btn:active { transform: scale(0.95); }
-        .btn-sm { padding: 5px 10px; font-size: 11px; }
-        .btn-warning { background: #f39c12; }
+        input, select, textarea { width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-bottom:10px; outline:none; box-sizing:border-box; }
+        .btn { background:var(--pri); color:white; padding:10px 20px; border:none; border-radius:6px; font-weight:bold; cursor:pointer; transition:0.2s; }
         
-        table { width:100%; border-collapse:collapse; margin-top:10px; min-width: 400px; }
-        th { text-align:left; color:#777; font-size:12px; text-transform:uppercase; padding:10px; border-bottom:2px solid #eee; white-space: nowrap; }
-        td { padding:12px 10px; border-bottom:1px solid #eee; vertical-align:middle; font-size: 14px; }
+        table { width:100%; border-collapse:collapse; margin-top:10px; min-width: 500px; }
+        th { text-align:left; color:#777; font-size:12px; text-transform:uppercase; padding:10px; border-bottom:2px solid #eee; background: #f8f9fa; }
+        td { padding:10px; border-bottom:1px solid #eee; vertical-align:middle; font-size: 13px; }
         
-        /* ĐƠN TỪ - RESPONSIVE */
-        .legal-paper { background: #fff; padding: 20px; border: 1px solid #ccc; font-family: 'Times New Roman', serif; font-size: 12pt; line-height: 1.5; margin: 0 auto; width: 100%; box-sizing: border-box; box-shadow: 2px 2px 10px rgba(0,0,0,0.05); }
-        .legal-header { text-align: center; margin-bottom: 15px; font-size: 12pt; }
+        /* LEGAL PAPER */
+        .legal-paper { background: #fff; padding: 40px 50px; border: 1px solid #ccc; font-family: 'Times New Roman', serif; font-size: 14pt; line-height: 1.5; margin: 0 auto; max-width: 800px; box-shadow: 5px 5px 15px rgba(0,0,0,0.1); }
+        .legal-header { text-align: center; margin-bottom: 20px; }
         .legal-nation { font-weight: bold; text-transform: uppercase; }
         .legal-motto { font-weight: bold; border-bottom: 1px solid #000; display: inline-block; padding-bottom: 5px; }
-        .legal-title { text-align: center; font-weight: bold; text-transform: uppercase; font-size: 14pt; margin: 20px 0; }
+        .legal-title { text-align: center; font-weight: bold; text-transform: uppercase; font-size: 16pt; margin: 30px 0; }
         .legal-input { border: none; border-bottom: 1px dotted #000; outline: none; width: auto; background: transparent; font-family: inherit; font-size: inherit; }
         .date-input { font-family: inherit; font-size: inherit; border: 1px solid #ccc; border-radius: 4px; padding: 2px 5px; background: #fffbe6; cursor: pointer; }
 
-        .badge { padding:4px 10px; border-radius:20px; font-size:11px; font-weight:bold; color:white; white-space: nowrap; }
+        .badge { padding:4px 10px; border-radius:20px; font-size:11px; font-weight:bold; color:white; display: inline-block;}
         .bg-ok { background:#00b894; } .bg-wait { background:#fdcb6e; color:#333; } .bg-no { background:#ff7675; }
+
+        /* OVERLAY CHO MOBILE */
+        #overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:980; }
 
         /* REPLY MODAL */
         #replyModal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 10000; }
-        .reply-box { background: white; width: 90%; max-width: 500px; border-radius: 15px; padding: 20px; position: relative; box-sizing: border-box; }
-        #slashMenu { position: absolute; bottom: 85px; left: 25px; width: 250px; background: white; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; z-index: 10001; max-width: 80%; }
+        .reply-box { background: white; width: 90%; max-width: 500px; border-radius: 15px; padding: 25px; position: relative; }
+        #slashMenu { position: absolute; bottom: 85px; left: 25px; width: 250px; background: white; border: 1px solid #eee; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; z-index: 10001; }
         .slash-item { padding: 12px 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #f9f9f9; }
-        
-        /* 📱 RESPONSIVE CHO ĐIỆN THOẠI */
-        @media screen and (max-width: 768px) {
-            #mobileHeader { display: flex; }
-            .sidebar { position: absolute; left: -260px; z-index: 99; box-shadow: 2px 0 10px rgba(0,0,0,0.2); }
-            .sidebar.active { left: 0; }
-            #overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 98; }
-            #overlay.active { display: block; }
-            
-            .content { padding: 15px; }
-            .card { padding: 15px; }
-            .flex-mobile { flex-direction: column !important; gap: 10px !important; }
-        }
+        .slash-item:hover { background: #f0f2ff; color: var(--pri); }
     </style>
 </head>
 <body>
 
-    <div id="loading"><div class="spinner"></div><p id="loadingTxt" style="margin-top:10px; font-weight:bold; color:var(--pri)">Đang nạp dữ liệu Hệ thống...</p></div>
+    <div id="loading" style="display:none"><div class="spinner"></div><p style="margin-top:10px; font-weight:bold; color:var(--pri)">Đang đồng bộ dữ liệu Lớp 8B...</p></div>
 
     <div id="loginWrap">
         <div class="login-box">
-            <h2 style="color:var(--pri); margin-bottom:5px">THỊNH ĐZ EDU</h2>
-            <p style="color:#888; font-size:13px; margin-bottom:25px">Quản trị Lớp 8B - Năm học 2025</p>
-            <input id="user" placeholder="Tên đăng nhập (admin / gv / m.an...)">
+            <h2 style="color:var(--pri); margin-bottom:5px">LỚP 8B</h2>
+            <p style="color:#555; font-weight:bold; font-size:12px; margin-bottom:20px; text-transform:uppercase">Trường THCS Nguyễn Viết Xuân</p>
+            <input id="user" placeholder="Tên đăng nhập (gv / m.an...)">
             <input id="pass" type="password" placeholder="Mật khẩu (123)">
             <button class="btn" style="width:100%" onclick="login()">Đăng Nhập</button>
+            <div style="margin-top:15px; font-size:11px; color:#999">
+                Powered by Thịnh ĐZ Edu
+            </div>
         </div>
     </div>
 
-    <div id="mobileHeader">
-        <button class="menu-btn" onclick="toggleSidebar()"><i class="fa fa-bars"></i></button>
-        <span style="font-weight: bold;">THỊNH ĐZ EDU</span>
-        <i class="fa fa-user-circle"></i>
+    <div class="mobile-header">
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <span>LỚP 8B - NGUYỄN VIẾT XUÂN</span>
+        <div style="width:20px"></div>
     </div>
 
     <div id="appWrap">
-        <div id="overlay" onclick="toggleSidebar()"></div> 
-
+        <div id="overlay" onclick="toggleMenu()"></div>
         <div class="sidebar" id="sidebar">
             <div class="user-panel">
-                <div style="width:40px; height:40px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center"><i class="fa fa-user"></i></div>
+                <div style="width:45px; height:45px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center"><i class="fa fa-user"></i></div>
                 <div><div style="font-weight:bold" id="uName">User</div><small id="uRole">Role</small></div>
             </div>
             <div class="menu-scroll" id="menuArea" style="flex:1; overflow-y:auto; padding:10px;"></div>
             <div style="padding:15px; border-top:1px solid #eee">
-                <button class="btn" onclick="syncData()" style="width:100%; margin-bottom:10px; background:#00b894"><i class="fa fa-sync"></i> Đồng bộ DL</button>
+                <button class="btn" onclick="syncData()" style="width:100%; margin-bottom:10px; background:#00b894"><i class="fa fa-sync"></i> Đồng bộ dữ liệu</button>
                 <button onclick="location.reload()" class="btn" style="width:100%; background:#fff; color:#ff7675; border:1px solid #ff7675"><i class="fa fa-power-off"></i> Đăng xuất</button>
             </div>
         </div>
-        <div class="content" id="mainContent"></div>
+        <div class="content">
+            <div class="main-header">
+                <div class="school-name"> <i class="fa fa-school"></i> TRƯỜNG THCS NGUYỄN VIẾT XUÂN - LỚP 8B</div>
+                <div style="font-size:13px; color:#666">Năm học: 2025 - 2026</div>
+            </div>
+            <div id="mainContent"></div>
+        </div>
     </div>
 
     <div id="replyModal">
         <div class="reply-box">
             <h3 style="margin-top:0; color:var(--pri)">💬 Phản Hồi Đơn</h3>
             <div style="margin-bottom: 15px; font-weight: bold;">Trạng thái: <span id="statusPreview" style="background:#eee; padding:3px 8px; border-radius:5px">Chưa chọn</span></div>
-            <textarea id="replyTxt" style="width:100%; height:100px; padding:15px; border:2px solid #e0e0e0; border-radius:10px; resize:none" placeholder="Gõ dấu / để chọn lệnh (Đồng ý/Không)..."></textarea>
+            <textarea id="replyTxt" style="width:100%; height:100px; padding:15px; border:2px solid #e0e0e0; border-radius:10px; resize:none" placeholder="Gõ dấu / để chọn lệnh nhanh (Đồng ý/Không)..."></textarea>
             <div id="slashMenu">
                 <div class="slash-item" onclick="selectSlash('Đã duyệt', 'Đồng ý')"><i class="fa fa-check-circle" style="color:#00b894"></i> <b>/dongy</b></div>
                 <div class="slash-item" onclick="selectSlash('Hủy', 'Không đồng ý')"><i class="fa fa-times-circle" style="color:#ff7675"></i> <b>/khong</b></div>
             </div>
             <div style="display:flex; gap:10px; margin-top:20px">
-                <button class="btn" style="background:#ddd; color:#333; flex:1" onclick="document.getElementById('replyModal').style.display='none'">Đóng</button>
-                <button class="btn" style="flex:1" onclick="submitReplyFinal()">Gửi Phản Hồi</button>
+                <button class="btn" style="background:#ddd; color:#333" onclick="document.getElementById('replyModal').style.display='none'">Đóng</button>
+                <button class="btn" onclick="submitReplyFinal()">Gửi Phản Hồi</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- 1. CẤU HÌNH API CHÍNH THỨC CỦA BẠN (100% HOẠT ĐỘNG) ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbwNr_iI1cLEW7VBzqHSlzKoIO7fyJnn7qWb5zdrpAWUB2Q-piRpAEnNi48RyAkC9rsY/exec"; 
+        // --- 1. CẤU HÌNH API ONLINE (Link GS của bạn) ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbxblDPpUu6rd2duywYrlMv-mRKfrktQSzW3h_XQTNUjAXpEKe-rh_W4kF3Vez1RC802/exec"; 
         
-        // Link Gốc Discord
-        const RAW_WH_PUBLIC = "https://discord.com/api/webhooks/1464165610371022900/ArTlhSg1C1vsYU_nw2Y0AlmikDKfaq5f7hE7HsH3ocBv1AwawaVxe3AhnZkgzgvuXijS";
-        const RAW_WH_PRIVATE = "https://discord.com/api/webhooks/1464166054916788305/aKeGJgfPnFcG0wVtnikSFK7PIMEt1WKttppL_MFkoOYkLlCyIrjjTuXnFHIVTClqHNzE";
+        // --- 2. CẤU HÌNH DISCORD WEBHOOK ---
+        const WH_PUBLIC = "https://discord.com/api/webhooks/1456305070181449789/gySnBocRkplcH8UrQvWpnDkg_8472oeOUFCjgOh23NkaGKbMFd7_crtncR5CF44D9lk7?wait=true";
+        const WH_PRIVATE = "https://discord.com/api/webhooks/1456659542699151598/j0LjBOW3wUnNN0p7lWeL5kvbfC4iITGuw5tZ47AWzVluPnsom1qrGGrKMRg3F1cIRRrY?wait=true";
 
-        // --- HÀM GỬI DISCORD THÔNG QUA GOOGLE SHEET (KHÔNG BỊ CHẶN) ---
-        async function sendToDiscordViaSheet(url, payload) {
-            try {
-                await fetch(API_URL, {
-                    method: 'POST', mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: "send_discord",
-                        url: url,
-                        payload: payload
-                    })
-                });
-            } catch(e) { console.error("Lỗi gửi:", e); }
+        // --- 3. MOBILE TOGGLE FUNCTION ---
+        function toggleMenu() {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('overlay');
+            sb.classList.toggle('open');
+            ov.style.display = sb.classList.contains('open') ? 'block' : 'none';
         }
 
-        // --- 2. KHỞI TẠO USER ---
+        // --- 4. DATA (42 HỌC SINH LỚP 8B - NGUYỄN VIẾT XUÂN) ---
         const rawStudents = ['Bùi Vũ Minh An','Trương Thị Diệu Anh','Lương Gia Bảo','Ê Ban Any Tùng','Nguyễn Cao Trường Hải','Đỗ Ngọc Hân','Đinh Thị Bích Hiền','Lê Văn Hiếu','Huỳnh Nguyễn Minh Hoàng','Lê Ngọc Hoàng','Dương Quốc Khải','Nguyễn Ngọc Thiên Kim','Huỳnh Cao Nhật Lâm','Nguyễn Quang Long','TRIỆU MẪN','Tăng Hữu Nam','Nguyễn Thùy Bảo Ngân','Nguyễn Trần Ngọc Ngân','Nguyễn Hoàng Bảo Ngọc','Phạm Minh Phước','Lê Hoàng Quân','Nguyễn Đăng Quân','Trần Quốc Quân','Nguyễn Thục Quyên','Tống Thanh Thanh','Lê Văn Thảo','Trần Bảo Thắng','Trần Thắng','Lê Trần Phúc Thiên','Lê Thế Thịnh','Ngô Nguyễn Bảo Thịnh','Lương Nguyễn Anh Thư','Nguyễn Anh Thư','Trịnh Nguyễn Minh Thư','Trần Hoài Thương','Nguyễn Ngọc Khánh Thy','Đỗ Phạm Huyền Trân','Trần Thị Bảo Trân','Hoàng Thủy Trúc','Nguyễn Huỳnh Như Trúc','Phạm Thanh Trung','Võ Hoàng Thụy Vân'];
         
         function cleanName(str) { str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a"); str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e"); str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i"); str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o"); str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u"); str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y"); str = str.replace(/đ/g,"d"); return str; }
         function genId(name) { let clean = cleanName(name).toLowerCase().trim().split(/\s+/); if(clean.length<2) return clean[0]; return clean[clean.length-2].charAt(0) + '.' + clean[clean.length-1]; }
 
-        const defaultUsers = [{u:'admin',p:'123',n:'Admin Hệ Thống',r:'admin',c:'ALL'}, {u:'gv',p:'123',n:'GVCN 8B',r:'teacher',c:'8B'}];
+        const usersDB = [{u:'admin',p:'123',n:'Admin Hệ Thống',r:'admin',c:'ALL'}, {u:'gv',p:'123',n:'GVCN 8B',r:'teacher',c:'8B'}];
         const studentList = []; const used = {};
         rawStudents.forEach(n => {
             let base = genId(n); let id = used[base] ? base + used[base] : base;
             if(used[base]) used[base]++; else used[base]=1;
-            defaultUsers.push({u:id, p:'123', n:n, r:'student', c:'8B'});
+            usersDB.push({u:id, p:'123', n:n, r:'student', c:'8B'});
             studentList.push({id:id, name:n});
         });
 
-        // --- 3. DATABASE & LOADING ---
+        // DB ONLINE
         let DB = { reqs: [], weekly: [], users: [] };
         let curr = null;
 
-        function showLoading(text) {
-            document.getElementById('loadingTxt').innerText = text || "Đang xử lý...";
-            document.getElementById('loading').style.display = 'flex';
-        }
-        function hideLoading() { document.getElementById('loading').style.display = 'none'; }
-
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
-        }
-
-        window.onload = async function() { await loadOnlineData(); }
-
+        // --- 5. ONLINE SYNC ---
         async function loadOnlineData() {
-            showLoading("Đang nạp dữ liệu Hệ thống...");
+            document.getElementById('loading').style.display = 'flex';
             try {
                 const res = await fetch(API_URL);
                 const data = await res.json();
+                
+                // NẾU DB TRỐNG (LẦN ĐẦU) -> NẠP DANH SÁCH 42 HS VÀO
                 if(!data || data.init || !data.users || data.users.length === 0) {
-                    DB.users = defaultUsers; DB.reqs = []; DB.weekly = [];
-                    await saveOnlineData("Khởi tạo hệ thống..."); 
-                } else { DB = data; }
-            } catch(e) { console.error("Lỗi tải dữ liệu", e); }
-            hideLoading();
+                    DB.users = usersDB;
+                    DB.reqs = [];
+                    DB.weekly = [];
+                    await saveOnlineData();
+                } else {
+                    DB = data;
+                }
+            } catch(e) { console.error("Lỗi mạng", e); }
+            document.getElementById('loading').style.display = 'none';
         }
 
-        async function saveOnlineData(msg) {
-            if(msg) showLoading(msg);
+        async function saveOnlineData() {
+            document.getElementById('loading').style.display = 'flex';
             try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(DB) });
-            } catch(e) { console.error("Lỗi lưu dữ liệu", e); }
-            if(msg) hideLoading();
+                await fetch(API_URL, {
+                    method: 'POST', mode: 'no-cors', 
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(DB)
+                });
+            } catch(e) { console.error(e); }
+            document.getElementById('loading').style.display = 'none';
         }
 
         async function syncData() {
@@ -216,105 +216,98 @@
             alert("Đã cập nhật dữ liệu mới nhất!");
         }
 
-        // --- 4. CORE LOGIN & NAV ---
+        // --- 6. CORE APP ---
         async function login() {
             const u = document.getElementById('user').value.toLowerCase().trim();
             const p = document.getElementById('pass').value;
-            const f = DB.users.find(x => x.u == u && x.p == p);
+            // Tìm trong DB Online (nếu đã tải) hoặc usersDB gốc (nếu mạng lỗi)
+            const list = (DB.users && DB.users.length > 0) ? DB.users : usersDB;
+            const f = list.find(x => x.u == u && x.p == p);
             
             if(f) { 
                 curr = f;
+                if(DB.users.length === 0) await loadOnlineData(); // Tải nếu chưa có
                 document.getElementById('loginWrap').style.display='none'; 
                 document.getElementById('appWrap').style.display='flex'; 
                 document.getElementById('uName').innerText = f.n; 
                 document.getElementById('uRole').innerText = f.r.toUpperCase(); 
                 renderMenu(); nav('rules'); 
-            } else alert('Sai tài khoản hoặc mật khẩu!');
+            }
+            else alert('Sai tài khoản! Thử: m.an / 123');
         }
 
         function renderMenu() {
             let h = `<div class="menu-cat">Thông tin chung</div><div class="menu-item" onclick="nav('rules')"><i class="fa fa-book"></i> Nội quy</div>`;
-            if(curr.r === 'student') {
-                h += `<div class="menu-cat">Cá nhân</div><div class="menu-item" onclick="nav('form')"><i class="fa fa-pen"></i> Soạn Văn Bản</div><div class="menu-item" onclick="nav('mailbox')"><i class="fa fa-envelope"></i> Hộp Thư</div><div class="menu-item" onclick="nav('my_rank')"><i class="fa fa-star"></i> Điểm Thi Đua</div>`;
-            } else if (curr.r === 'teacher') {
-                h += `<div class="menu-cat">Quản lý lớp</div><div class="menu-item" onclick="nav('approve')"><i class="fa fa-check-circle"></i> Duyệt Đơn Từ</div><div class="menu-item" onclick="nav('grading')"><i class="fa fa-edit"></i> Chấm Điểm Tuần</div><div class="menu-item" onclick="nav('class_list')"><i class="fa fa-list"></i> Xem DS Lớp</div>`;
-            } else if (curr.r === 'admin') {
-                h += `<div class="menu-cat">Quản trị Hệ thống</div><div class="menu-item" onclick="nav('accounts')"><i class="fa fa-user-cog"></i> Quản lý Tài khoản</div><div class="menu-item" onclick="nav('approve')"><i class="fa fa-check-double"></i> Xem toàn bộ đơn</div>`;
-            }
+            if(curr.r === 'student') h += `<div class="menu-cat">Cá nhân</div><div class="menu-item" onclick="nav('form')"><i class="fa fa-pen"></i> Soạn Văn Bản</div><div class="menu-item" onclick="nav('mailbox')"><i class="fa fa-envelope"></i> Hộp Thư</div><div class="menu-item" onclick="nav('my_rank')"><i class="fa fa-star"></i> Điểm Thi Đua</div>`;
+            else if(curr.r === 'teacher') h += `<div class="menu-cat">Quản lý lớp 8B</div><div class="menu-item" onclick="nav('approve')"><i class="fa fa-check-circle"></i> Duyệt Đơn</div><div class="menu-item" onclick="nav('grading')"><i class="fa fa-edit"></i> Chấm Điểm Tuần</div><div class="menu-item" onclick="nav('class_list')"><i class="fa fa-list"></i> Xem DS Lớp</div>`;
+            else h += `<div class="menu-cat">Quản trị</div><div class="menu-item" onclick="nav('accounts')"><i class="fa fa-users-cog"></i> Quản lý Tài khoản</div><div class="menu-item" onclick="nav('approve')"><i class="fa fa-check-double"></i> Xem tất cả đơn</div>`;
             document.getElementById('menuArea').innerHTML = h;
         }
 
         function nav(p) {
-            document.getElementById('sidebar').classList.remove('active');
-            document.getElementById('overlay').classList.remove('active');
-
             const c = document.getElementById('mainContent'); c.innerHTML = '';
             document.querySelectorAll('.menu-item').forEach(e=>e.classList.remove('active'));
             if(event && event.currentTarget.classList) event.currentTarget.classList.add('active');
+            
+            if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) toggleMenu();
 
             if(p === 'rules') {
-                c.innerHTML = `<div class="flex-mobile" style="display:flex; gap:20px"><div class="card" style="flex:1"><h3>🏛️ NỘI QUY TRƯỜNG</h3><ul><li>Đi học đúng giờ.</li><li>Lễ phép với thầy cô.</li></ul></div><div class="card" style="flex:1"><h3>🏫 NỘI QUY LỚP 8B</h3><ul><li>Vệ sinh sạch sẽ.</li><li>Không dùng điện thoại.</li></ul></div></div>`;
+                c.innerHTML = `<div style="display:flex; gap:20px; flex-wrap:wrap;"><div class="card" style="flex:1; min-width:280px"><h3>🏛️ NỘI QUY TRƯỜNG THCS NGUYỄN VIẾT XUÂN</h3><ul><li>Đi học đúng giờ.</li><li>Lễ phép với thầy cô.</li><li>Giữ gìn vệ sinh chung.</li></ul></div><div class="card" style="flex:1; min-width:280px"><h3>🏫 NỘI QUY LỚP 8B</h3><ul><li>Truy bài 15 phút đầu giờ.</li><li>Không dùng điện thoại trong giờ.</li><li>Đoàn kết, giúp đỡ bạn bè.</li></ul></div></div>`;
             }
             else if(p === 'form') {
-                c.innerHTML = `<div class="card"><div class="flex-mobile" style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center;"><h2>📝 Soạn Thảo</h2><select id="fType" onchange="renderForm()" style="width:200px; max-width:100%"><option value="nghi">Đơn xin nghỉ học</option><option value="tuongtrinh">Bản tường trình</option><option value="camket">Bản cam kết</option></select></div><div id="paperArea" style="background:#ccc; padding:15px; border-radius:10px;"></div><button class="btn" style="margin-top:20px; width:100%" onclick="sendForm()">GỬI ĐƠN LÊN HỆ THỐNG</button></div>`;
+                c.innerHTML = `<div class="card"><div style="display:flex; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px;"><h2>📝 Soạn Thảo</h2><select id="fType" onchange="renderForm()" style="width:200px"><option value="nghi">Đơn xin nghỉ học</option><option value="tuongtrinh">Bản tường trình</option><option value="camket">Bản cam kết</option></select></div><div id="paperArea" style="background:#ccc; padding:20px;"></div><button class="btn" style="margin-top:20px; width:100%" onclick="sendForm()">GỬI ĐƠN</button></div>`;
                 renderForm();
             }
             else if(p === 'mailbox') {
                 const list = DB.reqs.filter(r => r.sid === curr.u).reverse();
-                c.innerHTML = `<h2>📬 Hộp Thư</h2><div class="card">${list.length===0?'<p>Trống</p>':''}${list.map(r => `<div style="border-bottom:1px solid #eee; padding:15px 0"><div style="display:flex; justify-content:space-between; align-items:center;"><b style="color:var(--pri)">${r.type}</b><span class="badge ${r.st==='Đã duyệt'?'bg-ok':(r.st==='Hủy'?'bg-no':'bg-wait')}">${r.st}</span></div><div style="font-size:13px; color:#555; margin-top:5px;">Ngày gửi: ${r.date}</div><div style="background:#f9f9f9; padding:10px; margin-top:10px; border-radius:5px;"><b>💬 Lời nhắn GV:</b> ${r.reply || '(Chưa có)'}</div></div>`).join('')}</div>`;
+                c.innerHTML = `<h2>📬 Hộp Thư</h2><div class="card">${list.length===0?'<p>Trống</p>':''}${list.map(r => `<div style="border-bottom:1px solid #eee; padding:15px 0"><div style="display:flex; justify-content:space-between"><b style="color:var(--pri)">${r.type}</b><span class="badge ${r.st==='Đã duyệt'?'bg-ok':(r.st==='Hủy'?'bg-no':'bg-wait')}">${r.st}</span></div><div style="font-size:13px; color:#555">Ngày gửi: ${r.date}</div><div style="background:#f9f9f9; padding:10px; margin-top:10px"><b>💬 Lời nhắn GV:</b> ${r.reply || '(Chưa có)'}</div></div>`).join('')}</div>`;
             }
             else if(p === 'approve') {
                 const list = DB.reqs.filter(r => curr.r === 'admin' || r.cls === curr.c).reverse();
-                c.innerHTML = `<h2>✅ Duyệt Đơn</h2><div class="card" style="overflow-x:auto;"><table><thead><tr><th>HS</th><th>Loại</th><th>Ngày/Nội dung</th><th>Trạng thái</th><th>Xử lý</th></tr></thead><tbody>${list.map(r => `<tr><td><b>${r.sname}</b><br><small>${r.sid}</small></td><td>${r.secure?'🔒 ':''}${r.type}</td><td>${r.date}<br>${r.txt}</td><td><span class="badge ${r.st==='Đã duyệt'?'bg-ok':(r.st==='Hủy'?'bg-no':'bg-wait')}">${r.st}</span></td><td>${r.st==='Chờ' && curr.r !== 'admin' ?`<button class="btn btn-sm" onclick="openReply('${r.id}')">Phản hồi</button>`:(r.st==='Chờ'?'Chờ GV':'Đã xử lý')}</td></tr>`).join('')}</tbody></table></div>`;
+                c.innerHTML = `<h2>✅ Duyệt Đơn</h2><div class="card"><div style="overflow-x:auto"><table><thead><tr><th>HS</th><th>Loại</th><th>Ngày/Nội dung</th><th>Trạng thái</th><th>Xử lý</th></tr></thead><tbody>${list.map(r => `<tr><td><b>${r.sname}</b><br><small>${r.sid}</small></td><td>${r.secure?'🔒 ':''}${r.type}</td><td>${r.date}<br>${r.txt}</td><td><span class="badge ${r.st==='Đã duyệt'?'bg-ok':(r.st==='Hủy'?'bg-no':'bg-wait')}">${r.st}</span></td><td>${r.st==='Chờ' && curr.r !== 'admin' ?`<button class="btn" style="padding:5px 10px; font-size:11px" onclick="openReply('${r.id}')">Phản hồi</button>`:'Đã xử lý'}</td></tr>`).join('')}</tbody></table></div></div>`;
             }
             else if(p === 'grading') {
-                c.innerHTML = `<h2>✍️ Chấm Điểm Tuần</h2><div class="card"><div style="margin-bottom:15px"><select id="wSelect" onchange="loadWeekData()" style="width:150px"><option value="1">Tuần 1</option><option value="2">Tuần 2</option><option value="3">Tuần 3</option></select></div><div style="overflow-x:auto;"><table><thead><tr><th>ID</th><th>Học sinh</th><th>Điểm</th><th>Xếp loại</th><th>Ghi chú</th></tr></thead><tbody id="gradeTable"></tbody></table></div><button class="btn" style="margin-top:20px; width:100%;" onclick="saveGrades()">LƯU KẾT QUẢ</button></div>`;
+                c.innerHTML = `<h2>✍️ Chấm Điểm Tuần</h2><div class="card"><div style="margin-bottom:15px"><select id="wSelect" onchange="loadWeekData()" style="width:150px"><option value="1">Tuần 1</option><option value="2">Tuần 2</option><option value="3">Tuần 3</option></select></div><div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Học sinh</th><th>Điểm</th><th>Xếp loại</th><th>Ghi chú</th></tr></thead><tbody id="gradeTable"></tbody></table></div><button class="btn" style="margin-top:20px" onclick="saveGrades()">LƯU KẾT QUẢ</button></div>`;
                 loadWeekData();
             }
             else if(p === 'my_rank') {
                 const myW = DB.weekly.filter(w => w.sid === curr.u);
-                c.innerHTML = `<h2>🏆 Điểm Thi Đua</h2><div class="card" style="overflow-x:auto;"><table><thead><tr><th>Tuần</th><th>Điểm</th><th>Xếp loại</th><th>Nhận xét</th></tr></thead><tbody>${myW.map(w => `<tr><td>Tuần ${w.week}</td><td><b>${w.score}</b></td><td><span class="badge ${w.rank==='Tốt'?'bg-ok':'bg-wait'}">${w.rank}</span></td><td>${w.note}</td></tr>`).join('')}</tbody></table></div>`;
+                c.innerHTML = `<h2>🏆 Điểm Thi Đua</h2><div class="card"><div style="overflow-x:auto"><table><thead><tr><th>Tuần</th><th>Điểm</th><th>Xếp loại</th><th>Nhận xét</th></tr></thead><tbody>${myW.map(w => `<tr><td>Tuần ${w.week}</td><td><b>${w.score}</b></td><td><span class="badge ${w.rank==='Tốt'?'bg-ok':'bg-wait'}">${w.rank}</span></td><td>${w.note}</td></tr>`).join('')}</tbody></table></div></div>`;
             }
             else if(p === 'class_list') {
-                c.innerHTML = `<h2>Danh Sách Lớp 8B</h2><div class="card" style="overflow-x:auto;"><table><thead><tr><th>ID</th><th>Họ Tên</th></tr></thead><tbody>${studentList.map(s => `<tr><td>${s.id}</td><td>${s.name}</td></tr>`).join('')}</tbody></table></div>`;
+                c.innerHTML = `<h2>Danh Sách Lớp 8B</h2><div class="card"><div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Họ Tên</th></tr></thead><tbody>${studentList.map(s => `<tr><td>${s.id}</td><td>${s.name}</td></tr>`).join('')}</tbody></table></div></div>`;
             }
             else if(p === 'accounts') {
-                const students = DB.users.filter(u => u.r === 'student');
-                c.innerHTML = `<h2>⚙️ Quản lý Tài khoản</h2><div class="card" style="overflow-x:auto;"><table><thead><tr><th>User ID</th><th>Họ và Tên</th><th>Mật khẩu</th><th>Thao tác</th></tr></thead><tbody>${students.map(s => `<tr><td><b>${s.u}</b></td><td>${s.n}</td><td style="color:#ff7675; font-family:monospace">${s.p}</td><td><button class="btn btn-sm btn-warning" onclick="changePass('${s.u}')"><i class="fa fa-key"></i> Đổi MK</button></td></tr>`).join('')}</tbody></table></div>`;
+                const studs = DB.users.filter(u => u.r === 'student');
+                c.innerHTML = `<h2>⚙️ Quản lý Tài khoản</h2><div class="card"><div style="overflow-x:auto"><table><thead><tr><th>User ID</th><th>Họ và Tên</th><th>Mật khẩu</th><th>Thao tác</th></tr></thead><tbody>${studs.map(s => `<tr><td><b>${s.u}</b></td><td>${s.n}</td><td style="font-family:monospace">${s.p}</td><td><button class="btn" style="padding:5px 10px; font-size:11px; background:#f39c12" onclick="changePass('${s.u}')">Đổi MK</button></td></tr>`).join('')}</tbody></table></div></div>`;
             }
         }
 
-        async function changePass(userId) {
-            const newPass = prompt("Nhập mật khẩu mới cho tài khoản: " + userId);
-            if(!newPass) return;
-            const u = DB.users.find(x => x.u === userId);
-            if(u) { u.p = newPass; await saveOnlineData("Đang lưu mật khẩu..."); alert("Thành công!"); nav('accounts'); }
+        // --- 7. ADMIN: CHANGE PASS ---
+        async function changePass(uid) {
+            const newP = prompt("Nhập mật khẩu mới cho " + uid);
+            if(!newP) return;
+            const u = DB.users.find(x => x.u === uid);
+            if(u) { u.p = newP; await saveOnlineData(); alert("Đã đổi thành công!"); nav('accounts'); }
         }
 
-        // --- 6. FORM LOGIC ---
+        // --- 8. FORM LOGIC ---
         function renderForm() {
             const t = document.getElementById('fType').value;
             const a = document.getElementById('paperArea');
             const h = `<div class="legal-header"><div class="legal-nation">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div><div class="legal-motto">Độc lập - Tự do - Hạnh phúc</div></div>`;
-            
-            window.updateFooterDate = function(el) {
-                const d = new Date(el.value);
-                if(!isNaN(d.getTime())) { document.getElementById('footerDate').innerText = `Ngày ${d.getDate()} tháng ${d.getMonth()+1} năm ${d.getFullYear()}`; }
-            }
-
+            window.updateFooterDate = function(el) { const d = new Date(el.value); if(!isNaN(d.getTime())) { document.getElementById('footerDate').innerText = `Ngày ${d.getDate()} tháng ${d.getMonth()+1} năm ${d.getFullYear()}`; } }
             let body = '';
-            if(t==='nghi') body = `<div class="legal-title">ĐƠN XIN NGHỈ HỌC</div><p>Kính gửi: GVCN Lớp ${curr.c}</p><p>Em tên: ${curr.n}</p><p>Xin nghỉ từ ngày: <input type="date" id="datePicker" class="date-input" onchange="updateFooterDate(this)"></p><p>Lý do: <input id="fTxt" class="legal-input" style="width:100%" placeholder="..."></p>`;
-            else if(t==='tuongtrinh') body = `<div class="legal-title">BẢN TƯỜNG TRÌNH</div><p>Kính gửi: Ban Giám Hiệu</p><p>Em tên: ${curr.n}</p><p>Vào ngày: <input type="date" id="datePicker" class="date-input" onchange="updateFooterDate(this)"></p><p>Nội dung: <input id="fTxt" class="legal-input" style="width:100%"></p>`;
-            else body = `<div class="legal-title">BẢN CAM KẾT</div><p>Kính gửi: GVCN</p><p>Em tên: ${curr.n}</p><p>Ngày vi phạm: <input type="date" id="datePicker" class="date-input" onchange="updateFooterDate(this)"></p><p>Nội dung cam kết: <input id="fTxt" class="legal-input" style="width:100%"></p>`;
-            
+            if(t==='nghi') body = `<div class="legal-title">ĐƠN XIN NGHỈ HỌC</div><p>Kính gửi: GVCN Lớp ${curr.c}</p><p>Em tên: ${curr.n}</p><p>Xin nghỉ từ ngày: <input type="date" id="datePicker" class="date-input" onchange="updateFooterDate(this)"></p><p>Lý do: <input id="fTxt" class="legal-input" style="width:70%" placeholder="..."></p>`;
+            else if(t==='tuongtrinh') body = `<div class="legal-title">BẢN TƯỜNG TRÌNH</div><p>Kính gửi: Ban Giám Hiệu</p><p>Em tên: ${curr.n}</p><p>Vào ngày: <input type="date" id="datePicker" class="date-input" onchange="updateFooterDate(this)"></p><p>Nội dung: <input id="fTxt" class="legal-input" style="width:80%"></p>`;
+            else body = `<div class="legal-title">BẢN CAM KẾT</div><p>Kính gửi: GVCN</p><p>Em tên: ${curr.n}</p><p>Ngày vi phạm: <input type="date" id="datePicker" class="date-input" onchange="updateFooterDate(this)"></p><p>Nội dung cam kết: <input id="fTxt" class="legal-input" style="width:80%"></p>`;
             a.innerHTML = `<div class="legal-paper">${h}${body}<br><br><div style="text-align:right"><i id="footerDate">Ngày... tháng... năm...</i><br><b>Người làm đơn</b><br><br>${curr.n}</div></div>`;
         }
 
-        // --- GỬI ĐƠN LÊN DISCORD (NHỜ GOOGLE SHEET LÀM CẦU NỐI) ---
         async function sendForm() {
             const txt = document.getElementById('fTxt').value;
             const dateVal = document.getElementById('datePicker').value;
-            if(!txt || !dateVal) return alert('⚠️ Bạn vui lòng nhập đủ thông tin và chọn ngày nhé!');
+            if(!txt || !dateVal) return alert('Nhập đủ thông tin!');
             
             const d = new Date(dateVal);
             const fmtDate = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
@@ -322,33 +315,39 @@
             const tText = document.getElementById('fType').options[document.getElementById('fType').selectedIndex].text;
             const isSecure = tVal !== 'nghi';
             
-            // 1. Lưu vào Sheet
             DB.reqs.push({ 
                 id: Date.now(), sid: curr.u, sname: curr.n, cls: curr.c, 
-                type: tText, txt: txt, st: 'Chờ', reply: '', secure: isSecure, date: fmtDate 
+                type: tText, txt: txt, st: 'Chờ', reply: '', secure: isSecure, 
+                date: fmtDate 
             });
-            await saveOnlineData("Đang lưu đơn và gửi lên Discord...");
+            await saveOnlineData();
 
-            // 2. Gửi Webhook Discord qua Google Sheet
-            const discordUrl = isSecure ? RAW_WH_PRIVATE : RAW_WH_PUBLIC;
-            const payload = {
-                username: "THỊNH ĐZ BOT",
-                avatar_url: "https://i.imgur.com/4M34hi2.png",
-                embeds: [{
-                    title: isSecure ? "🔒 VĂN BẢN MẬT (CAM KẾT/TƯỜNG TRÌNH)" : "📝 ĐƠN XIN NGHỈ HỌC",
-                    description: `**👤 Học sinh:** ${curr.n}\n**🆔 ID:** ${curr.u}\n**📅 Ngày:** ${fmtDate}\n\n**📄 Nội dung chi tiết:**\n> ${txt}`,
-                    color: isSecure ? 15158332 : 3066993,
-                    timestamp: new Date().toISOString()
-                }]
-            };
+            const webhookUrl = isSecure ? WH_PRIVATE : WH_PUBLIC;
+            const embedColor = isSecure ? 15158332 : 3066993; 
+            const embedTitle = isSecure ? "🔒 VĂN BẢN MẬT" : "📝 ĐƠN XIN NGHỈ";
 
-            await sendToDiscordViaSheet(discordUrl, payload);
-            alert('✅ Đã gửi đơn và thông báo thành công!');
-            nav('mailbox');
+            try {
+                await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        "username": "THỊNH ĐZ BOT",
+                        "avatar_url": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                        "embeds": [{
+                            "title": embedTitle,
+                            "description": `**Học sinh:** ${curr.n}\n**Lớp:** ${curr.c}\n**Ngày:** ${fmtDate}\n**Nội dung:** ${txt}`,
+                            "color": embedColor
+                        }]
+                    })
+                });
+            } catch(e) { console.error("Discord Error", e); }
+            
+            alert('Đã gửi thành công!'); nav('mailbox');
         }
 
-        // --- 7. SLASH COMMAND & REPLY ---
-        let currentReplyId = null; let selectedStatus = null;
+        // --- 9. SLASH COMMAND & REPLY ---
+        let currentReplyId = null;
+        let selectedStatus = null;
 
         function openReply(id) {
             currentReplyId = id; selectedStatus = null;
@@ -371,7 +370,8 @@
             let currentVal = txtBox.value.replace(/\/\s*$/, '').replace(/^\/\s*/, '');
             txtBox.value = currentVal.trim() === '' ? text + " " : currentVal.trim() + " " + text + " ";
             document.getElementById('slashMenu').style.display = 'none';
-            txtBox.focus(); updateStatusPreview();
+            txtBox.focus();
+            updateStatusPreview();
         }
 
         function updateStatusPreview() {
@@ -381,7 +381,6 @@
             else { el.innerText = "Hủy"; el.style.background = "#ff7675"; el.style.color = "#fff"; }
         }
 
-        // --- GIÁO VIÊN TRẢ LỜI VÀ BÁO LÊN DISCORD ---
         async function submitReplyFinal() {
             const note = document.getElementById('replyTxt').value;
             if (!note) return alert("Nhập nội dung!");
@@ -390,36 +389,42 @@
             const r = DB.reqs.find(x => x.id == currentReplyId);
             if(r) {
                 r.st = selectedStatus; r.reply = note;
-                await saveOnlineData("Đang gửi phản hồi...");
+                await saveOnlineData();
 
-                // Gửi Webhook Discord qua Google Sheet
-                const discordUrl = r.secure ? RAW_WH_PRIVATE : RAW_WH_PUBLIC;
-                const payload = {
-                    username: "THỊNH ĐZ BOT",
-                    avatar_url: "https://i.imgur.com/4M34hi2.png",
-                    embeds: [{
-                        title: selectedStatus==='Đã duyệt' ? "✅ GV ĐÃ DUYỆT ĐƠN" : "❌ GV TỪ CHỐI ĐƠN",
-                        description: `**👤 Học sinh:** ${r.sname}\n\n💬 **Lời nhắn từ Giáo viên:**\n> ${note}`,
-                        color: selectedStatus==='Đã duyệt' ? 3066993 : 15158332,
-                        timestamp: new Date().toISOString()
-                    }]
-                };
+                // FIX DISCORD REPLY
+                const webhookUrl = r.secure ? WH_PRIVATE : WH_PUBLIC;
+                const embedColor = selectedStatus === 'Đã duyệt' ? 3066993 : 15158332;
+                const embedTitle = selectedStatus === 'Đã duyệt' ? "✅ ĐÃ DUYỆT" : "❌ TỪ CHỐI";
 
-                await sendToDiscordViaSheet(discordUrl, payload);
+                try {
+                    await fetch(webhookUrl, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            "username": "THỊNH ĐZ BOT",
+                            "embeds": [{
+                                "title": embedTitle,
+                                "description": `GV đã trả lời trên web.\n💬 **Nội dung:** ${note}\n👤 **Học sinh:** ${r.sname}`,
+                                "color": embedColor
+                            }]
+                        })
+                    });
+                } catch(e) { console.error("Discord Error", e); }
 
                 document.getElementById('replyModal').style.display='none';
                 nav('approve');
             }
         }
 
-        // --- 8. CHẤM ĐIỂM ---
+        // --- 10. CHẤM ĐIỂM ---
         function loadWeekData() {
             const w = document.getElementById('wSelect').value;
             const tb = document.getElementById('gradeTable');
             tb.innerHTML = '';
+            
             studentList.forEach(s => {
                 const old = DB.weekly.find(x => x.week == w && x.sid == s.id) || {};
-                tb.innerHTML += `<tr><td><small>${s.id}</small></td><td>${s.name}</td><td><input type="number" id="s_${s.id}" value="${old.score||100}" style="width:60px"></td><td><select id="r_${s.id}" style="width:80px"><option ${old.rank=='Tốt'?'selected':''}>Tốt</option><option ${old.rank=='Khá'?'selected':''}>Khá</option><option ${old.rank=='TB'?'selected':''}>TB</option></select></td><td><input type="text" id="n_${s.id}" value="${old.note||''}" placeholder="Nhận xét..."></td></tr>`;
+                tb.innerHTML += `<tr><td><small>${s.id}</small></td><td>${s.name}</td><td><input type="number" id="s_${s.id}" value="${old.score||100}" style="width:60px"></td><td><select id="r_${s.id}" style="width:100px"><option ${old.rank=='Tốt'?'selected':''}>Tốt</option><option ${old.rank=='Khá'?'selected':''}>Khá</option><option ${old.rank=='TB'?'selected':''}>TB</option></select></td><td><input type="text" id="n_${s.id}" value="${old.note||''}" placeholder="Nhận xét..."></td></tr>`;
             });
         }
 
@@ -433,10 +438,9 @@
                 if(idx > -1) DB.weekly.splice(idx, 1);
                 DB.weekly.push({ week: w, sid: s.id, score: sc, rank: rk, note: nt });
             });
-            await saveOnlineData("Đang lưu điểm...");
+            await saveOnlineData();
             alert('Đã lưu điểm tuần ' + w);
         }
     </script>
 </body>
 </html>
-
