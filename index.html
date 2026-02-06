@@ -7,32 +7,27 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- STYLE MOTION & MOBILE --- */
+        /* --- STYLE KHÔNG ĐỔI --- */
         :root { --pri: #4e54c8; --sec: #8f94fb; --bg: #f4f6f9; }
         body { font-family: 'Segoe UI', sans-serif; background: #eef2f5; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        #loading { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); z-index:10000; display:flex; justify-content:center; align-items:center; flex-direction:column; }
+        #loading { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); z-index:10000; display:none; justify-content:center; align-items:center; flex-direction:column; }
         .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--pri); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* MOBILE HEADER */
         .mobile-header { display: none; background: var(--pri); color: white; padding: 15px; font-weight: bold; justify-content: space-between; align-items: center; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .menu-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
 
-        /* LOGIN */
         #loginWrap { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(5px); display:flex; justify-content:center; align-items:center; z-index:999; }
         .login-box { background:white; padding:30px; border-radius:15px; width:90%; max-width: 380px; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.2); }
         
-        /* APP LAYOUT */
         #appWrap { display:none; height:100%; position: relative; }
         .sidebar { width:260px; background:#fff; display:flex; flex-direction:column; border-right:1px solid #ddd; transition: 0.3s; z-index: 990; }
         .content { flex:1; padding:20px; overflow-y:auto; background: var(--bg); -webkit-overflow-scrolling: touch; }
         
-        /* HEADER DESKTOP */
         .main-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; border-bottom: 1px solid #eee; margin-bottom: 20px; border-radius: 10px; }
         .school-name { font-weight: bold; font-size: 16px; color: var(--pri); text-transform: uppercase; }
 
-        /* RESPONSIVE */
         @media (max-width: 768px) {
             .mobile-header { display: flex; }
             .main-header { display: none; } 
@@ -59,7 +54,6 @@
         th { text-align:left; color:#777; font-size:12px; text-transform:uppercase; padding:10px; border-bottom:2px solid #eee; background: #f8f9fa; text-align: center; }
         td { padding:10px; border-bottom:1px solid #eee; vertical-align:middle; font-size: 13px; text-align: center; }
         
-        /* LEGAL PAPER */
         .legal-paper { background: #fff; padding: 40px 50px; border: 1px solid #ccc; font-family: 'Times New Roman', serif; font-size: 14pt; line-height: 1.5; margin: 0 auto; max-width: 800px; box-shadow: 5px 5px 15px rgba(0,0,0,0.1); }
         .legal-header { text-align: center; margin-bottom: 20px; }
         .legal-nation { font-weight: bold; text-transform: uppercase; }
@@ -83,7 +77,7 @@
 </head>
 <body>
 
-    <div id="loading" style="display:none"><div class="spinner"></div><p style="margin-top:10px; font-weight:bold; color:var(--pri)">Đang đồng bộ dữ liệu...</p></div>
+    <div id="loading"><div class="spinner"></div><p style="margin-top:10px; font-weight:bold; color:var(--pri)">Đang đồng bộ dữ liệu...</p></div>
 
     <div id="loginWrap">
         <div class="login-box">
@@ -152,7 +146,7 @@
             ov.style.display = sb.classList.contains('open') ? 'block' : 'none';
         }
 
-        // --- 2. DATA ---
+        // --- 2. DATA KHỞI TẠO (CHỈ DÙNG KHI SERVER TRỐNG) ---
         const rawStudents = ['Bùi Vũ Minh An','Trương Thị Diệu Anh','Lương Gia Bảo','Ê Ban Any Tùng','Nguyễn Cao Trường Hải','Đỗ Ngọc Hân','Đinh Thị Bích Hiền','Lê Văn Hiếu','Huỳnh Nguyễn Minh Hoàng','Lê Ngọc Hoàng','Dương Quốc Khải','Nguyễn Ngọc Thiên Kim','Huỳnh Cao Nhật Lâm','Nguyễn Quang Long','TRIỆU MẪN','Tăng Hữu Nam','Nguyễn Thùy Bảo Ngân','Nguyễn Trần Ngọc Ngân','Nguyễn Hoàng Bảo Ngọc','Phạm Minh Phước','Lê Hoàng Quân','Nguyễn Đăng Quân','Trần Quốc Quân','Nguyễn Thục Quyên','Tống Thanh Thanh','Lê Văn Thảo','Trần Bảo Thắng','Trần Thắng','Lê Trần Phúc Thiên','Lê Thế Thịnh','Ngô Nguyễn Bảo Thịnh','Lương Nguyễn Anh Thư','Nguyễn Anh Thư','Trịnh Nguyễn Minh Thư','Trần Hoài Thương','Nguyễn Ngọc Khánh Thy','Đỗ Phạm Huyền Trân','Trần Thị Bảo Trân','Hoàng Thủy Trúc','Nguyễn Huỳnh Như Trúc','Phạm Thanh Trung','Võ Hoàng Thụy Vân'];
         
         function genId(name) { 
@@ -162,8 +156,7 @@
             return clean[clean.length-2].charAt(0) + '.' + clean[clean.length-1]; 
         }
 
-        // --- 🔥 SỬA MẬT KHẨU ADMIN TẠI ĐÂY ---
-        // Thay 'dotac' bằng mật khẩu bạn muốn. Mật khẩu HS mặc định vẫn là 123
+        // Dữ liệu gốc (Chỉ để khởi tạo, không dùng để check login nếu đã có Online Data)
         const usersDB = [{u:'admin',p:'dotac',n:'Admin Hệ Thống',r:'admin',c:'ALL'}, {u:'gv',p:'123',n:'GVCN',r:'teacher',c:'Main'}];
         
         const studentList = []; const used = {};
@@ -178,14 +171,19 @@
         let DB = { reqs: [], weekly: [], users: [], config: defaultConfig, schedule: {}, weekList: ["Tuần 1"], scheduleList: ["Học Kỳ 1"] };
         let curr = null;
 
-        // --- 3. ONLINE ---
+        // --- 3. ONLINE SYNC ---
+        // Tải trang xong là load data ngay, nhưng chưa tắt loading
+        window.onload = function() {
+            document.getElementById('loading').style.display = 'none'; // Ẩn loading ban đầu để hiện Login
+        }
+
         async function loadOnlineData() {
-            document.getElementById('loading').style.display = 'flex';
             try {
                 const res = await fetch(API_URL);
                 const data = await res.json();
                 if(!data || data.init || !data.users || data.users.length === 0) {
-                    DB.users = usersDB; DB.config = defaultConfig; DB.weekList = ["Tuần 1"]; DB.scheduleList = ["Học Kỳ 1"]; await saveOnlineData();
+                    DB.users = usersDB; DB.config = defaultConfig; DB.weekList = ["Tuần 1"]; DB.scheduleList = ["Học Kỳ 1"]; 
+                    await saveOnlineData();
                 } else {
                     DB = data;
                     if(!DB.config) DB.config = defaultConfig;
@@ -194,53 +192,74 @@
                     if(!DB.schedule) DB.schedule = {};
                 }
                 renderConfig(); 
-            } catch(e) { console.error("Lỗi", e); }
-            document.getElementById('loading').style.display = 'none';
+            } catch(e) { console.error("Lỗi tải data", e); }
         }
 
         async function saveOnlineData() {
-            document.getElementById('loading').style.display = 'flex';
             try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(DB) }); } 
             catch(e) { console.error(e); }
-            document.getElementById('loading').style.display = 'none';
         }
 
         function renderConfig() {
-            document.getElementById('lbl_loginClass').innerText = DB.config.className;
-            document.getElementById('lbl_loginSchool').innerText = DB.config.schoolName;
-            document.getElementById('lbl_mobileTitle').innerText = DB.config.className + " - " + DB.config.schoolName;
-            document.getElementById('lbl_schoolName').innerText = DB.config.schoolName;
-            document.getElementById('lbl_className').innerText = DB.config.className;
-            document.getElementById('lbl_year').innerText = DB.config.year;
-            document.title = "Quản lý " + DB.config.className;
+            if(DB.config) {
+                document.getElementById('lbl_loginClass').innerText = DB.config.className;
+                document.getElementById('lbl_loginSchool').innerText = DB.config.schoolName;
+                document.getElementById('lbl_mobileTitle').innerText = DB.config.className;
+                document.getElementById('lbl_schoolName').innerText = DB.config.schoolName;
+                document.getElementById('lbl_className').innerText = DB.config.className;
+                document.getElementById('lbl_year').innerText = DB.config.year;
+                document.title = "Quản lý " + DB.config.className;
+            }
         }
 
-        async function syncData() { await loadOnlineData(); alert("Đã đồng bộ!"); }
+        async function syncData() { 
+            document.getElementById('loading').style.display = 'flex';
+            await loadOnlineData(); 
+            document.getElementById('loading').style.display = 'none';
+            alert("Đã cập nhật dữ liệu mới nhất!"); 
+        }
 
-        // --- 4. CORE APP ---
+        // --- 4. CORE LOGIN (FIXED) ---
         async function login() {
             const u = document.getElementById('user').value.toLowerCase().trim();
             const p = document.getElementById('pass').value;
-            const list = (DB.users && DB.users.length > 0) ? DB.users : usersDB;
-            const f = list.find(x => x.u == u && x.p == p);
             
+            // BƯỚC 1: Hiện Loading để chặn người dùng bấm linh tinh
+            document.getElementById('loading').style.display = 'flex';
+            
+            // BƯỚC 2: BẮT BUỘC TẢI DATA MỚI NHẤT TỪ SERVER VỀ
+            await loadOnlineData();
+            
+            // BƯỚC 3: KIỂM TRA ĐĂNG NHẬP TRÊN DỮ LIỆU VỪA TẢI (DB.users)
+            // Tuyệt đối không dùng usersDB (hardcode) nếu DB.users đã có dữ liệu
+            let checkList = DB.users;
+            if (!checkList || checkList.length === 0) checkList = usersDB; 
+
+            const f = checkList.find(x => x.u == u && x.p == p);
+            
+            // BƯỚC 4: Tắt Loading
+            document.getElementById('loading').style.display = 'none';
+
             if(f) { 
                 curr = f;
-                if(DB.users.length === 0) await loadOnlineData();
                 document.getElementById('loginWrap').style.display='none'; 
                 document.getElementById('appWrap').style.display='flex'; 
                 document.getElementById('uName').innerText = f.n; 
                 document.getElementById('uRole').innerText = f.r.toUpperCase(); 
                 renderMenu(); nav('rules'); 
+            } else {
+                alert('Sai tên đăng nhập hoặc mật khẩu!');
             }
-            else alert('Sai thông tin đăng nhập!');
         }
 
         function renderMenu() {
-            let h = `<div class="menu-cat">Thông tin chung</div><div class="menu-item" onclick="nav('rules')"><i class="fa fa-book"></i> Nội quy</div><div class="menu-item" onclick="nav('schedule')"><i class="fa fa-calendar-alt"></i> Thời khóa biểu</div>`;
+            let h = `<div class="menu-cat">Thông tin chung</div>
+                     <div class="menu-item" onclick="nav('rules')"><i class="fa fa-book"></i> Nội quy</div>
+                     <div class="menu-item" onclick="nav('schedule')"><i class="fa fa-calendar-alt"></i> Thời khóa biểu</div>`;
+            
             if(curr.r === 'student') h += `<div class="menu-cat">Cá nhân</div><div class="menu-item" onclick="nav('form')"><i class="fa fa-pen"></i> Soạn Văn Bản</div><div class="menu-item" onclick="nav('mailbox')"><i class="fa fa-envelope"></i> Hộp Thư</div><div class="menu-item" onclick="nav('my_rank')"><i class="fa fa-star"></i> Điểm Thi Đua</div><div class="menu-item" onclick="nav('my_pass')"><i class="fa fa-key"></i> Đổi Mật Khẩu</div>`;
-            else if(curr.r === 'teacher') h += `<div class="menu-cat">Quản lý lớp</div><div class="menu-item" onclick="nav('approve')"><i class="fa fa-check-circle"></i> Duyệt Đơn</div><div class="menu-item" onclick="nav('grading')"><i class="fa fa-edit"></i> Chấm Điểm Tuần</div><div class="menu-item" onclick="nav('class_list')"><i class="fa fa-list"></i> Xem DS Lớp</div><div class="menu-item" onclick="nav('accounts')"><i class="fa fa-users-cog"></i> Quản lý Tài khoản</div>`;
-            else h += `<div class="menu-cat">Quản trị</div><div class="menu-item" onclick="nav('settings')"><i class="fa fa-cog"></i> Cài đặt Hệ thống</div><div class="menu-item" onclick="nav('accounts')"><i class="fa fa-users-cog"></i> Quản lý Tài khoản</div><div class="menu-item" onclick="nav('approve')"><i class="fa fa-check-double"></i> Xem tất cả đơn</div>`;
+            else if(curr.r === 'teacher') h += `<div class="menu-cat">Quản lý lớp</div><div class="menu-item" onclick="nav('approve')"><i class="fa fa-check-circle"></i> Duyệt Đơn</div><div class="menu-item" onclick="nav('grading')"><i class="fa fa-edit"></i> Chấm Điểm Tuần</div><div class="menu-item" onclick="nav('class_list')"><i class="fa fa-list"></i> Xem DS Lớp</div><div class="menu-item" onclick="nav('accounts')"><i class="fa fa-users-cog"></i> Quản lý Tài khoản</div><div class="menu-item" onclick="nav('my_pass')"><i class="fa fa-key"></i> Đổi Mật Khẩu</div>`;
+            else h += `<div class="menu-cat">Quản trị</div><div class="menu-item" onclick="nav('settings')"><i class="fa fa-cog"></i> Cài đặt Hệ thống</div><div class="menu-item" onclick="nav('accounts')"><i class="fa fa-users-cog"></i> Quản lý Tài khoản</div><div class="menu-item" onclick="nav('approve')"><i class="fa fa-check-double"></i> Xem tất cả đơn</div><div class="menu-item" onclick="nav('my_pass')"><i class="fa fa-key"></i> Đổi Mật Khẩu</div>`;
             document.getElementById('menuArea').innerHTML = h;
         }
 
@@ -250,10 +269,8 @@
             if(event && event.currentTarget.classList) event.currentTarget.classList.add('active');
             if(window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open')) toggleMenu();
 
-            if(p === 'rules') {
-                c.innerHTML = `<div style="display:flex; gap:20px; flex-wrap:wrap;"><div class="card" style="flex:1; min-width:280px"><h3>🏛️ NỘI QUY ${DB.config.schoolName}</h3><ul><li>Đi học đúng giờ.</li><li>Lễ phép với thầy cô.</li><li>Giữ gìn vệ sinh chung.</li></ul></div><div class="card" style="flex:1; min-width:280px"><h3>🏫 NỘI QUY ${DB.config.className}</h3><ul><li>Truy bài 15 phút đầu giờ.</li><li>Không dùng điện thoại trong giờ.</li><li>Đoàn kết, giúp đỡ bạn bè.</li></ul></div></div>`;
-            }
-            // SCHEDULE (TKB)
+            if(p === 'rules') c.innerHTML = `<div style="display:flex; gap:20px; flex-wrap:wrap;"><div class="card" style="flex:1; min-width:280px"><h3>🏛️ NỘI QUY ${DB.config.schoolName}</h3><ul><li>Đi học đúng giờ.</li><li>Lễ phép với thầy cô.</li><li>Giữ gìn vệ sinh chung.</li></ul></div><div class="card" style="flex:1; min-width:280px"><h3>🏫 NỘI QUY ${DB.config.className}</h3><ul><li>Truy bài 15 phút đầu giờ.</li><li>Không dùng điện thoại trong giờ.</li><li>Đoàn kết, giúp đỡ bạn bè.</li></ul></div></div>`;
+            
             else if(p === 'schedule') {
                 const canEdit = (curr.r === 'teacher' || curr.r === 'admin');
                 let selectHtml = `<select id="tkbSelect" onchange="loadScheduleView()" style="flex:1">`;
@@ -261,141 +278,73 @@
                 let html = `<div class="flex-control"><h2>📅 Thời Khóa Biểu</h2>${selectHtml}${canEdit ? `<button class="btn btn-green" onclick="addTKBVersion()">+ Thêm</button>` : ''}</div><div class="card" id="tkbContainer"><p>Đang tải...</p></div>${canEdit ? `<button class="btn" style="margin-top:10px" onclick="saveSchedule()">Lưu TKB này</button>` : ''}`;
                 c.innerHTML = html; loadScheduleView();
             }
-            // FORM
-            else if(p === 'form') {
-                c.innerHTML = `<div class="card"><div class="flex-control" style="justify-content:space-between"><h2>📝 Soạn Thảo</h2><select id="fType" onchange="renderForm()" style="width:200px"><option value="nghi">Đơn xin nghỉ học</option><option value="tuongtrinh">Bản tường trình</option><option value="camket">Bản cam kết</option></select></div><div id="paperArea" style="background:#ccc; padding:20px;"></div><button class="btn" style="margin-top:20px; width:100%" onclick="sendForm()">GỬI ĐƠN</button></div>`;
-                renderForm();
-            }
-            // MAILBOX
-            else if(p === 'mailbox') {
-                const list = DB.reqs.filter(r => r.sid === curr.u).reverse();
-                c.innerHTML = `<h2>📬 Hộp Thư</h2><div class="card">${list.length===0?'<p>Hộp thư trống</p>':''}${list.map(r => `<div style="border-bottom:1px solid #eee; padding:15px 0"><div style="display:flex; justify-content:space-between"><b style="color:var(--pri)">${r.type}</b><span class="badge ${r.st==='Đã duyệt'?'bg-ok':(r.st==='Hủy'?'bg-no':'bg-wait')}">${r.st}</span></div><div style="font-size:13px; color:#555">Ngày gửi: ${r.date}</div><div style="background:#f9f9f9; padding:10px; margin-top:10px"><b>💬 Lời nhắn GV:</b> ${r.reply || '(Chưa có)'}</div></div>`).join('')}</div>`;
-            }
-            // APPROVE (GV)
-            else if(p === 'approve') {
-                const list = DB.reqs.filter(r => curr.r === 'admin' || r.cls === curr.c).reverse();
-                c.innerHTML = `<h2>✅ Duyệt Đơn</h2><div class="card"><div class="table-wrap"><table><thead><tr><th>HS</th><th>Loại</th><th>Ngày/Nội dung</th><th>Trạng thái</th><th>Xử lý</th></tr></thead><tbody>${list.map(r => `<tr><td><b>${r.sname}</b><br><small>${r.sid}</small></td><td>${r.secure?'🔒 ':''}${r.type}</td><td>${r.date}<br>${r.txt}</td><td><span class="badge ${r.st==='Đã duyệt'?'bg-ok':(r.st==='Hủy'?'bg-no':'bg-wait')}">${r.st}</span></td><td>${r.st==='Chờ' && curr.r !== 'admin' ?`<button class="btn" style="padding:5px 10px; font-size:11px" onclick="openReply('${r.id}')">Phản hồi</button>`:(r.st==='Chờ'?'Đang chờ':'Đã xử lý')}</td></tr>`).join('')}</tbody></table></div></div>`;
-            }
-            // GRADING (GV)
-            else if(p === 'grading') {
-                let selectHtml = `<select id="wSelect" onchange="loadWeekData()" style="flex:1">`;
-                DB.weekList.forEach(w => { selectHtml += `<option value="${w}">${w}</option>`; }); selectHtml += `</select>`;
-                c.innerHTML = `<div class="flex-control"><h2>✍️ Chấm Điểm</h2>${selectHtml}<button class="btn btn-green" onclick="addWeekVersion()">+ Thêm Tuần</button></div><div class="card"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Học sinh</th><th>Điểm</th><th>Xếp loại</th><th>Ghi chú</th></tr></thead><tbody id="gradeTable"></tbody></table></div></div><button class="btn" style="margin-top:20px" onclick="saveGrades()">LƯU KẾT QUẢ</button>`;
-                loadWeekData();
-            }
-            // MY RANK
-            else if(p === 'my_rank') {
-                const myW = DB.weekly.filter(w => w.sid === curr.u);
-                c.innerHTML = `<h2>🏆 Điểm Thi Đua</h2><div class="card"><div class="table-wrap"><table><thead><tr><th>Tuần</th><th>Điểm</th><th>Xếp loại</th><th>Nhận xét</th></tr></thead><tbody>${myW.map(w => `<tr><td>${w.week}</td><td><b>${w.score}</b></td><td><span class="badge ${w.rank==='Tốt'?'bg-ok':'bg-wait'}">${w.rank}</span></td><td>${w.note}</td></tr>`).join('')}</tbody></table></div></div>`;
-            }
-            // ADMIN: ACCOUNTS
+            
+            else if(p === 'form') { c.innerHTML = `<div class="card"><div style="display:flex; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px;"><h2>📝 Soạn Thảo</h2><select id="fType" onchange="renderForm()" style="width:200px"><option value="nghi">Đơn xin nghỉ học</option><option value="tuongtrinh">Bản tường trình</option><option value="camket">Bản cam kết</option></select></div><div id="paperArea" style="background:#ccc; padding:20px;"></div><button class="btn" style="margin-top:20px; width:100%" onclick="sendForm()">GỬI ĐƠN</button></div>`; renderForm(); }
+            
+            else if(p === 'mailbox') { const list = DB.reqs.filter(r => r.sid === curr.u).reverse(); c.innerHTML = `<h2>📬 Hộp Thư</h2><div class="card">${list.length===0?'<p>Trống</p>':''}${list.map(r => `<div style="border-bottom:1px solid #eee; padding:15px 0"><div style="display:flex; justify-content:space-between"><b style="color:var(--pri)">${r.type}</b><span class="badge ${r.st==='Đã duyệt'?'bg-ok':(r.st==='Hủy'?'bg-no':'bg-wait')}">${r.st}</span></div><div style="font-size:13px; color:#555">Ngày gửi: ${r.date}</div><div style="background:#f9f9f9; padding:10px; margin-top:10px"><b>💬 Lời nhắn GV:</b> ${r.reply || '(Chưa có)'}</div></div>`).join('')}</div>`; }
+            
+            else if(p === 'approve') { const list = DB.reqs.filter(r => curr.r === 'admin' || r.cls === curr.c).reverse(); c.innerHTML = `<h2>✅ Duyệt Đơn</h2><div class="card"><div style="overflow-x:auto"><table><thead><tr><th>HS</th><th>Loại</th><th>Ngày/Nội dung</th><th>Trạng thái</th><th>Xử lý</th></tr></thead><tbody>${list.map(r => `<tr><td><b>${r.sname}</b><br><small>${r.sid}</small></td><td>${r.secure?'🔒 ':''}${r.type}</td><td>${r.date}<br>${r.txt}</td><td><span class="badge ${r.st==='Đã duyệt'?'bg-ok':(r.st==='Hủy'?'bg-no':'bg-wait')}">${r.st}</span></td><td>${r.st==='Chờ' && curr.r !== 'admin' ?`<button class="btn" style="padding:5px 10px; font-size:11px" onclick="openReply('${r.id}')">Phản hồi</button>`:(r.st==='Chờ'?'Đang chờ':'Đã xử lý')}</td></tr>`).join('')}</tbody></table></div></div>`; }
+            
+            else if(p === 'grading') { let selectHtml = `<select id="wSelect" onchange="loadWeekData()" style="flex:1">`; DB.weekList.forEach(w => { selectHtml += `<option value="${w}">${w}</option>`; }); selectHtml += `</select>`; c.innerHTML = `<div class="flex-control"><h2>✍️ Chấm Điểm</h2>${selectHtml}<button class="btn btn-green" onclick="addWeekVersion()">+ Thêm Tuần</button></div><div class="card"><div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Học sinh</th><th>Điểm</th><th>Xếp loại</th><th>Ghi chú</th></tr></thead><tbody id="gradeTable"></tbody></table></div></div><button class="btn" style="margin-top:20px" onclick="saveGrades()">LƯU KẾT QUẢ</button>`; loadWeekData(); }
+            
+            else if(p === 'my_rank') { const myW = DB.weekly.filter(w => w.sid === curr.u); c.innerHTML = `<h2>🏆 Điểm Thi Đua</h2><div class="card"><div style="overflow-x:auto"><table><thead><tr><th>Tuần</th><th>Điểm</th><th>Xếp loại</th><th>Nhận xét</th></tr></thead><tbody>${myW.map(w => `<tr><td>${w.week}</td><td><b>${w.score}</b></td><td><span class="badge ${w.rank==='Tốt'?'bg-ok':'bg-wait'}">${w.rank}</span></td><td>${w.note}</td></tr>`).join('')}</tbody></table></div></div>`; }
+            
+            else if(p === 'class_list') { c.innerHTML = `<h2>Danh Sách Lớp</h2><div class="card"><div style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Họ Tên</th></tr></thead><tbody>${studentList.map(s => `<tr><td>${s.id}</td><td>${s.name}</td></tr>`).join('')}</tbody></table></div></div>`; }
+            
+            // --- QUẢN LÝ TÀI KHOẢN ---
             else if(p === 'accounts') {
                 const studs = DB.users.filter(u => u.r === 'student');
-                c.innerHTML = `<h2>⚙️ Quản lý Tài khoản</h2><div class="card"><div class="table-wrap"><table><thead><tr><th>User ID</th><th>Họ và Tên</th><th>Mật khẩu</th><th>Thao tác</th></tr></thead><tbody>${studs.map(s => `<tr><td><b>${s.u}</b></td><td>${s.n}</td><td style="font-family:monospace">${s.p}</td><td><button class="btn btn-warn" style="padding:5px 10px; font-size:11px;" onclick="changePass('${s.u}')">Đổi MK</button></td></tr>`).join('')}</tbody></table></div></div>`;
+                c.innerHTML = `<h2>⚙️ Quản lý Tài khoản (Học sinh)</h2><div class="card"><p style="color:#666; font-size:13px; margin-bottom:15px">GVCN/Admin có thể đổi mật khẩu cho học sinh tại đây.</p><div style="overflow-x:auto"><table><thead><tr><th>User ID</th><th>Họ và Tên</th><th>Mật khẩu</th><th>Thao tác</th></tr></thead><tbody>${studs.map(s => `<tr><td><b>${s.u}</b></td><td>${s.n}</td><td style="font-family:monospace">${s.p}</td><td><button class="btn btn-sm btn-warning" onclick="changePass('${s.u}')">Đổi MK</button></td></tr>`).join('')}</tbody></table></div></div>`;
             }
-            // SETTINGS
-            else if(p === 'settings') {
-                c.innerHTML = `<h2>🔧 Cài đặt Hệ Thống</h2><div class="card"><label>Tên Lớp (VD: LỚP 9A):</label><input id="set_class" value="${DB.config.className}"><label>Tên Trường (VD: TRƯỜNG THCS ABC):</label><input id="set_school" value="${DB.config.schoolName}"><label>Niên khóa (VD: 2025 - 2026):</label><input id="set_year" value="${DB.config.year}"><button class="btn" style="margin-top:10px" onclick="saveSettings()">Lưu Cài Đặt</button></div>`;
-            }
-            // CLASS LIST
-            else if(p === 'class_list') {
-                c.innerHTML = `<h2>Danh Sách Lớp</h2><div class="card"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Họ Tên</th></tr></thead><tbody>${studentList.map(s => `<tr><td>${s.id}</td><td>${s.name}</td></tr>`).join('')}</tbody></table></div></div>`;
-            }
-            // MY PASSWORD
+            // --- ĐỔI MẬT KHẨU CÁ NHÂN ---
             else if(p === 'my_pass') {
-                c.innerHTML = `<h2>🔑 Đổi Mật Khẩu</h2><div class="card" style="max-width:400px"><label>Mật khẩu cũ:</label><input type="password" id="oldP"><label>Mật khẩu mới:</label><input type="password" id="newP"><button class="btn" style="margin-top:10px" onclick="selfChangePass()">Cập nhật</button></div>`;
+                c.innerHTML = `<h2>🔑 Đổi Mật Khẩu Cá Nhân</h2><div class="card" style="max-width:400px"><label>Mật khẩu cũ:</label><input type="password" id="oldP"><label>Mật khẩu mới:</label><input type="password" id="newP"><button class="btn" style="margin-top:10px" onclick="selfChangePass()">Cập nhật</button></div>`;
             }
+            
+            else if(p === 'settings') { c.innerHTML = `<h2>🔧 Cài đặt Hệ Thống</h2><div class="card"><label>Tên Lớp (VD: LỚP 9A):</label><input id="set_class" value="${DB.config.className}"><label>Tên Trường (VD: TRƯỜNG THCS ABC):</label><input id="set_school" value="${DB.config.schoolName}"><label>Niên khóa (VD: 2025 - 2026):</label><input id="set_year" value="${DB.config.year}"><button class="btn" style="margin-top:10px" onclick="saveSettings()">Lưu Cài Đặt</button></div>`; }
         }
 
         // --- 5. LOGIC CHỨC NĂNG ---
-        async function changePass(uid) {
-            const newP = prompt("Nhập mật khẩu mới cho " + uid);
-            if(!newP) return;
-            const u = DB.users.find(x => x.u === uid);
-            if(u) { u.p = newP; await saveOnlineData(); alert("Đã đổi thành công!"); nav('accounts'); }
-        }
-        
-        async function selfChangePass() {
-            const oldP = document.getElementById('oldP').value;
-            const newP = document.getElementById('newP').value;
-            if(oldP !== curr.p) return alert("Mật khẩu cũ không đúng!");
-            if(!newP) return alert("Chưa nhập mật khẩu mới!");
-            const idx = DB.users.findIndex(x => x.u === curr.u);
-            if(idx > -1) {
-                DB.users[idx].p = newP;
-                curr.p = newP;
-                await saveOnlineData();
-                alert("Đã đổi mật khẩu thành công!");
-                document.getElementById('oldP').value = ''; document.getElementById('newP').value = '';
-            }
-        }
-
         async function addWeekVersion() { const n = prompt("Nhập tên tuần mới:"); if(n && !DB.weekList.includes(n)) { DB.weekList.push(n); await saveOnlineData(); alert("Đã thêm!"); nav('grading'); } }
         async function addTKBVersion() { const n = prompt("Nhập tên TKB mới:"); if(n && !DB.scheduleList.includes(n)) { DB.scheduleList.push(n); await saveOnlineData(); alert("Đã thêm!"); nav('schedule'); } }
         
-        function loadScheduleView() {
-            const ver = document.getElementById('tkbSelect').value;
-            const canEdit = (curr.r === 'teacher' || curr.r === 'admin');
-            let html = `<div class="table-wrap"><table><thead><tr><th>Tiết</th><th>Thứ 2</th><th>Thứ 3</th><th>Thứ 4</th><th>Thứ 5</th><th>Thứ 6</th><th>Thứ 7</th></tr></thead><tbody>`;
-            for(let i=1; i<=5; i++) {
-                html += `<tr><td style="font-weight:bold; width:50px">Tiết ${i}</td>`;
-                for(let d=2; d<=7; d++) {
-                    const key = `${ver}_d${d}_t${i}`;
-                    const val = (DB.schedule && DB.schedule[key]) ? DB.schedule[key] : '';
-                    if(canEdit) html += `<td><input class="tkb-input" id="${key}" value="${val}"></td>`;
-                    else html += `<td>${val || '-'}</td>`;
-                }
-                html += `</tr>`;
-            }
-            html += `</tbody></table></div>`;
-            document.getElementById('tkbContainer').innerHTML = html;
+        function loadScheduleView() { const ver = document.getElementById('tkbSelect').value; const canEdit = (curr.r === 'teacher' || curr.r === 'admin'); let html = `<div style="overflow-x:auto"><table><thead><tr><th>Tiết</th><th>Thứ 2</th><th>Thứ 3</th><th>Thứ 4</th><th>Thứ 5</th><th>Thứ 6</th><th>Thứ 7</th></tr></thead><tbody>`; for(let i=1; i<=5; i++) { html += `<tr><td style="font-weight:bold">Tiết ${i}</td>`; for(let d=2; d<=7; d++) { const key = `${ver}_d${d}_t${i}`; const val = (DB.schedule && DB.schedule[key]) ? DB.schedule[key] : ''; if(canEdit) html += `<td><input class="tkb-input" id="${key}" value="${val}"></td>`; else html += `<td>${val || '-'}</td>`; } html += `</tr>`; } html += `</tbody></table></div>`; document.getElementById('tkbContainer').innerHTML = html; }
+        async function saveSchedule() { 
+            document.getElementById('loading').style.display = 'flex';
+            const ver = document.getElementById('tkbSelect').value; for(let i=1; i<=5; i++) { for(let d=2; d<=7; d++) { const key = `${ver}_d${d}_t${i}`; DB.schedule[key] = document.getElementById(key).value; } } 
+            await saveOnlineData(); 
+            document.getElementById('loading').style.display = 'none';
+            alert("Đã lưu TKB: " + ver); 
         }
 
-        async function saveSchedule() {
-            const ver = document.getElementById('tkbSelect').value;
-            for(let i=1; i<=5; i++) { for(let d=2; d<=7; d++) { const key = `${ver}_d${d}_t${i}`; DB.schedule[key] = document.getElementById(key).value; } }
-            await saveOnlineData(); alert("Đã lưu TKB: " + ver);
+        async function changePass(uid) { 
+            const newP = prompt("Nhập mật khẩu mới cho " + uid); if(!newP) return; 
+            document.getElementById('loading').style.display = 'flex';
+            const u = DB.users.find(x => x.u === uid); if(u) { u.p = newP; await saveOnlineData(); }
+            document.getElementById('loading').style.display = 'none';
+            alert("Đã đổi thành công!"); nav('accounts'); 
+        }
+        
+        async function selfChangePass() { 
+            const oldP = document.getElementById('oldP').value; const newP = document.getElementById('newP').value; 
+            if(oldP !== curr.p) return alert("Mật khẩu cũ không đúng!"); 
+            if(!newP) return alert("Chưa nhập mật khẩu mới!");
+            document.getElementById('loading').style.display = 'flex';
+            const idx = DB.users.findIndex(x => x.u === curr.u); if(idx > -1) { DB.users[idx].p = newP; curr.p = newP; await saveOnlineData(); }
+            document.getElementById('loading').style.display = 'none';
+            alert("Đã đổi mật khẩu thành công!"); 
+            document.getElementById('oldP').value = ''; document.getElementById('newP').value = '';
+        }
+        
+        async function saveSettings() { 
+            document.getElementById('loading').style.display = 'flex';
+            DB.config.className = document.getElementById('set_class').value; DB.config.schoolName = document.getElementById('set_school').value; DB.config.year = document.getElementById('set_year').value; await saveOnlineData(); renderConfig(); 
+            document.getElementById('loading').style.display = 'none';
+            alert("Đã lưu thông tin!"); 
         }
 
-        async function saveSettings() {
-            DB.config.className = document.getElementById('set_class').value;
-            DB.config.schoolName = document.getElementById('set_school').value;
-            DB.config.year = document.getElementById('set_year').value;
-            await saveOnlineData(); renderConfig(); alert("Đã lưu thông tin!");
-        }
-
-        function renderForm() {
-            const t = document.getElementById('fType').value;
-            const a = document.getElementById('paperArea');
-            const h = `<div class="legal-header"><div class="legal-nation">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div><div class="legal-motto">Độc lập - Tự do - Hạnh phúc</div></div>`;
-            window.updateFooterDate = function(el) { const d = new Date(el.value); if(!isNaN(d.getTime())) { document.getElementById('footerDate').innerText = `Ngày ${d.getDate()} tháng ${d.getMonth()+1} năm ${d.getFullYear()}`; } }
-            let body = '';
-            if(t==='nghi') body = `<div class="legal-title">ĐƠN XIN NGHỈ HỌC</div><p>Kính gửi: GVCN ${DB.config.className}</p><p>Em tên: ${curr.n}</p><p>Xin nghỉ từ ngày: <input type="date" id="datePicker" class="date-input" onchange="updateFooterDate(this)"></p><p>Lý do: <input id="fTxt" class="legal-input" style="width:70%" placeholder="..."></p>`;
-            else if(t==='tuongtrinh') body = `<div class="legal-title">BẢN TƯỜNG TRÌNH</div><p>Kính gửi: Ban Giám Hiệu</p><p>Em tên: ${curr.n}</p><p>Vào ngày: <input type="date" id="datePicker" class="date-input" onchange="updateFooterDate(this)"></p><p>Nội dung: <input id="fTxt" class="legal-input" style="width:80%"></p>`;
-            else body = `<div class="legal-title">BẢN CAM KẾT</div><p>Kính gửi: GVCN</p><p>Em tên: ${curr.n}</p><p>Ngày vi phạm: <input type="date" id="datePicker" class="date-input" onchange="updateFooterDate(this)"></p><p>Nội dung cam kết: <input id="fTxt" class="legal-input" style="width:80%"></p>`;
-            a.innerHTML = `<div class="legal-paper">${h}${body}<br><br><div style="text-align:right"><i id="footerDate">Ngày... tháng... năm...</i><br><b>Người làm đơn</b><br><br>${curr.n}</div></div>`;
-        }
-
-        async function sendForm() {
-            const txt = document.getElementById('fTxt').value;
-            const dateVal = document.getElementById('datePicker').value;
-            if(!txt || !dateVal) return alert('Nhập đủ thông tin!');
-            const d = new Date(dateVal);
-            const fmtDate = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
-            const tVal = document.getElementById('fType').value;
-            const tText = document.getElementById('fType').options[document.getElementById('fType').selectedIndex].text;
-            const isSecure = tVal !== 'nghi';
-            
-            DB.reqs.push({ id: Date.now(), sid: curr.u, sname: curr.n, cls: curr.c, type: tText, txt: txt, st: 'Chờ', reply: '', secure: isSecure, date: fmtDate });
-            await saveOnlineData();
-
-            const webhookUrl = isSecure ? WH_PRIVATE : WH_PUBLIC;
-            const embedColor = isSecure ? 15158332 : 3066993; 
-            const embedTitle = isSecure ? "🔒 VĂN BẢN MẬT" : "📝 ĐƠN XIN NGHỈ";
-
-            try { await fetch(webhookUrl, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ "username": "THỊNH ĐZ BOT", "embeds": [{ "title": embedTitle, "description": `**Học sinh:** ${curr.n}\n**Lớp:** ${DB.config.className}\n**Ngày:** ${fmtDate}\n**Nội dung:** ${txt}`, "color": embedColor }] }) }); } catch(e) {}
-            alert('Đã gửi thành công!'); nav('mailbox');
-        }
+        function renderForm() { const t = document.getElementById('fType').value; const a = document.getElementById('paperArea'); const h = `<div class="legal-header"><div class="legal-nation">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div><div class="legal-motto">Độc lập - Tự do - Hạnh phúc</div></div>`; window.updateFooterDate = function(el) { const d = new Date(el.value); if(!isNaN(d.getTime())) { document.getElementById('footerDate').innerText = `Ngày ${d.getDate()} tháng ${d.getMonth()+1} năm ${d.getFullYear()}`; } }; let body = ''; if(t==='nghi') body = `<div class="legal-title">ĐƠN XIN NGHỈ HỌC</div><p>Kính gửi: GVCN ${DB.config.className}</p><p>Em tên: ${curr.n}</p><p>Xin nghỉ từ ngày: <input type="date" id="datePicker" class="date-input" onchange="updateFooterDate(this)"></p><p>Lý do: <input id="fTxt" class="legal-input" style="width:70%" placeholder="..."></p>`; else if(t==='tuongtrinh') body = `<div class="legal-title">BẢN TƯỜNG TRÌNH</div><p>Kính gửi: Ban Giám Hiệu</p><p>Em tên: ${curr.n}</p><p>Vào ngày: <input type="date" id="datePicker" class="date-input" onchange="updateFooterDate(this)"></p><p>Nội dung: <input id="fTxt" class="legal-input" style="width:80%"></p>`; else body = `<div class="legal-title">BẢN CAM KẾT</div><p>Kính gửi: GVCN</p><p>Em tên: ${curr.n}</p><p>Ngày vi phạm: <input type="date" id="datePicker" class="date-input" onchange="updateFooterDate(this)"></p><p>Nội dung cam kết: <input id="fTxt" class="legal-input" style="width:80%"></p>`; a.innerHTML = `<div class="legal-paper">${h}${body}<br><br><div style="text-align:right"><i id="footerDate">Ngày... tháng... năm...</i><br><b>Người làm đơn</b><br><br>${curr.n}</div></div>`; }
+        async function sendForm() { const txt = document.getElementById('fTxt').value; const dateVal = document.getElementById('datePicker').value; if(!txt || !dateVal) return alert('Nhập đủ thông tin!'); const d = new Date(dateVal); const fmtDate = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`; const tVal = document.getElementById('fType').value; const tText = document.getElementById('fType').options[document.getElementById('fType').selectedIndex].text; const isSecure = tVal !== 'nghi'; DB.reqs.push({ id: Date.now(), sid: curr.u, sname: curr.n, cls: curr.c, type: tText, txt: txt, st: 'Chờ', reply: '', secure: isSecure, date: fmtDate }); await saveOnlineData(); const webhookUrl = isSecure ? WH_PRIVATE : WH_PUBLIC; const embedColor = isSecure ? 15158332 : 3066993; const embedTitle = isSecure ? "🔒 VĂN BẢN MẬT" : "📝 ĐƠN XIN NGHỈ"; try { await fetch(webhookUrl, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ "username": "THỊNH ĐZ BOT", "embeds": [{ "title": embedTitle, "description": `**Học sinh:** ${curr.n}\n**Lớp:** ${DB.config.className}\n**Ngày:** ${fmtDate}\n**Nội dung:** ${txt}`, "color": embedColor }] }) }); } catch(e) {} alert('Đã gửi thành công!'); nav('mailbox'); }
 
         let currentReplyId = null; let selectedStatus = null;
         function openReply(id) { currentReplyId = id; selectedStatus = null; document.getElementById('replyModal').style.display = 'flex'; document.getElementById('replyTxt').value = ''; updateStatusPreview(); document.getElementById('slashMenu').style.display = 'none'; }
@@ -404,24 +353,13 @@
         function updateStatusPreview() { const el = document.getElementById('statusPreview'); if (!selectedStatus) { el.innerText = "Chưa chọn"; el.style.background = "#eee"; el.style.color = "#555"; } else if (selectedStatus === 'Đã duyệt') { el.innerText = "Duyệt"; el.style.background = "#00b894"; el.style.color = "#fff"; } else { el.innerText = "Hủy"; el.style.background = "#ff7675"; el.style.color = "#fff"; } }
         async function submitReplyFinal() { const note = document.getElementById('replyTxt').value; if (!note || !selectedStatus) return alert("Thiếu thông tin!"); const r = DB.reqs.find(x => x.id == currentReplyId); if(r) { r.st = selectedStatus; r.reply = note; await saveOnlineData(); try { await fetch(r.secure ? WH_PRIVATE : WH_PUBLIC, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ "username": "THỊNH ĐZ BOT", "embeds": [{ "title": selectedStatus==='Đã duyệt'?"✅ ĐÃ DUYỆT":"❌ TỪ CHỐI", "description": `GV đã trả lời.\n💬 **Nội dung:** ${note}\n👤 **Học sinh:** ${r.sname}`, "color": selectedStatus==='Đã duyệt'?3066993:15158332 }] }) }); } catch(e){} document.getElementById('replyModal').style.display='none'; nav('approve'); } }
 
-        function loadWeekData() {
-            const w = document.getElementById('wSelect').value;
-            const tb = document.getElementById('gradeTable');
-            tb.innerHTML = '';
-            studentList.forEach(s => {
-                const old = DB.weekly.find(x => x.week == w && x.sid == s.id) || {};
-                tb.innerHTML += `<tr><td><small>${s.id}</small></td><td>${s.name}</td><td><input type="number" id="s_${s.id}" value="${old.score||100}" style="width:60px"></td><td><select id="r_${s.id}" style="width:100px"><option ${old.rank=='Tốt'?'selected':''}>Tốt</option><option ${old.rank=='Khá'?'selected':''}>Khá</option><option ${old.rank=='TB'?'selected':''}>TB</option></select></td><td><input type="text" id="n_${s.id}" value="${old.note||''}" placeholder="..."></td></tr>`;
-            });
-        }
-
-        async function saveGrades() {
-            const w = document.getElementById('wSelect').value;
-            studentList.forEach(s => {
-                const idx = DB.weekly.findIndex(x => x.week == w && x.sid == s.id);
-                if(idx > -1) DB.weekly.splice(idx, 1);
-                DB.weekly.push({ week: w, sid: s.id, score: document.getElementById(`s_${s.id}`).value, rank: document.getElementById(`r_${s.id}`).value, note: document.getElementById(`n_${s.id}`).value });
-            });
-            await saveOnlineData(); alert('Đã lưu điểm tuần ' + w);
+        function loadWeekData() { const w = document.getElementById('wSelect').value; const tb = document.getElementById('gradeTable'); tb.innerHTML = ''; studentList.forEach(s => { const old = DB.weekly.find(x => x.week == w && x.sid == s.id) || {}; tb.innerHTML += `<tr><td><small>${s.id}</small></td><td>${s.name}</td><td><input type="number" id="s_${s.id}" value="${old.score||100}" style="width:60px"></td><td><select id="r_${s.id}" style="width:100px"><option ${old.rank=='Tốt'?'selected':''}>Tốt</option><option ${old.rank=='Khá'?'selected':''}>Khá</option><option ${old.rank=='TB'?'selected':''}>TB</option></select></td><td><input type="text" id="n_${s.id}" value="${old.note||''}" placeholder="..."></td></tr>`; }); }
+        async function saveGrades() { 
+            document.getElementById('loading').style.display = 'flex';
+            const w = document.getElementById('wSelect').value; studentList.forEach(s => { const idx = DB.weekly.findIndex(x => x.week == w && x.sid == s.id); if(idx > -1) DB.weekly.splice(idx, 1); DB.weekly.push({ week: w, sid: s.id, score: document.getElementById(`s_${s.id}`).value, rank: document.getElementById(`r_${s.id}`).value, note: document.getElementById(`n_${s.id}`).value }); }); 
+            await saveOnlineData(); 
+            document.getElementById('loading').style.display = 'none';
+            alert('Đã lưu điểm tuần ' + w); 
         }
     </script>
 </body>
