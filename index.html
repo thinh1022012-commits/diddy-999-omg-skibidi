@@ -2,110 +2,163 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a56db">
     <title id="pageTitle">Hệ Thống Quản Lý Giáo Dục</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         /* =========================================
-           1. THIẾT LẬP GIAO DIỆN CƠ BẢN (CSS)
+           1. THIẾT LẬP GIAO DIỆN FIGMA (CSS MỚI)
         ========================================= */
-        :root { --pri: #4e54c8; --sec: #8f94fb; --bg: #f4f6f9; --text: #333; }
-        body { font-family: 'Segoe UI', sans-serif; background: #eef2f5; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; color: var(--text); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        :root { 
+            --pri: #1a56db;       /* Xanh dương chủ đạo Figma */
+            --pri-hover: #1e40af; 
+            --bg: #f4f7fe;        /* Nền xám nhạt app */
+            --text-main: #1f2937; /* Đen nhạt */
+            --text-mut: #6b7280;  /* Xám phụ */
+            --card-bg: #ffffff;
+            --sidebar-active-bg: #e0f2fe;
+            --sidebar-text-active: #0c4a6e;
+        }
         
-        #loading { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:10000; display:none; justify-content:center; align-items:center; flex-direction:column; backdrop-filter: blur(3px); }
-        .spinner { width: 50px; height: 50px; border: 5px solid #ddd; border-top: 5px solid var(--pri); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; color: var(--text-main); -webkit-tap-highlight-color: transparent; }
+        
+        #loading { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:10000; display:none; justify-content:center; align-items:center; flex-direction:column; backdrop-filter: blur(4px); }
+        .spinner { width: 50px; height: 50px; border: 4px solid #f1f5f9; border-top: 4px solid var(--pri); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        #loginWrap { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; justify-content:center; align-items:center; z-index:999; }
-        .login-box { background:white; padding:30px; border-radius:15px; width:90%; max-width: 380px; text-align:center; box-shadow:0 15px 40px rgba(0,0,0,0.2); }
+        /* --- MÀN HÌNH LOGIN CHIA ĐÔI --- */
+        #loginWrap { position: fixed; top:0; left:0; width:100%; height:100%; background: white; display:flex; z-index:999; }
+        .login-split-desc { flex: 1.2; background: linear-gradient(135deg, #1e3a8a, var(--pri)); color: white; display: flex; flex-direction: column; justify-content: center; padding: 60px; position: relative; overflow: hidden; }
+        .login-desc-content { position: relative; z-index: 2; }
+        .login-desc-content h1 { font-size: 36px; font-weight: 800; margin-bottom: 10px; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+        .login-desc-content p { font-size: 18px; opacity: 0.9; margin-bottom: 40px; font-weight: 500; }
+        .login-illustration { font-size: 200px; text-align: center; opacity: 0.05; position: absolute; right: -50px; bottom: -50px; }
         
+        .login-split-form { flex: 1; display: flex; justify-content: center; align-items: center; background: #f8fafc; }
+        .login-box { background: white; padding: 40px; border-radius: 20px; width: 85%; max-width: 400px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .login-box h2 { font-weight: 800; margin-bottom: 8px; color: var(--text-main); font-size: 24px;}
+        .login-box p { color: var(--text-mut); font-size: 14px; margin-bottom: 30px; }
+
+        /* --- BỐ CỤC APP CHÍNH --- */
         #appWrap { display:none; height:100%; position: relative; }
-        .sidebar { width:260px; background:#fff; display:flex; flex-direction:column; border-right:1px solid #ddd; transition: 0.3s; z-index: 990; }
-        .content { flex:1; padding:20px; overflow-y:auto; background: var(--bg); }
+        .sidebar { width:260px; background:#fff; display:flex; flex-direction:column; border-right:1px solid #e2e8f0; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 990; height: 100%; }
+        .content { flex:1; padding:25px; overflow-y:auto; background: var(--bg); position: relative; -webkit-overflow-scrolling: touch;}
         
-        .main-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; border-bottom: 1px solid #eee; margin-bottom: 20px; border-radius: 10px; }
-        .mobile-header { display: none; background: var(--pri); color: white; padding: 15px; font-weight: bold; justify-content: space-between; align-items: center; z-index: 1000; }
-        .menu-btn { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+        .main-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; background: white; border-bottom: 1px solid #e2e8f0; margin-bottom: 25px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .mobile-header { display: none; background: white; color: var(--text-main); padding: 15px 20px; font-weight: 800; justify-content: space-between; align-items: center; z-index: 1000; border-bottom: 1px solid #e2e8f0; padding-top: max(15px, env(safe-area-inset-top)); }
+        .menu-btn { background: none; border: none; color: var(--text-main); font-size: 22px; cursor: pointer; }
 
         @media (max-width: 768px) {
             .mobile-header { display: flex; }
             .main-header { display: none; } 
             #appWrap { flex-direction: column; }
-            .sidebar { position: absolute; top: 0; left: -260px; height: 100%; box-shadow: 2px 0 10px rgba(0,0,0,0.1); z-index: 9999; }
+            .login-split-desc { display: none; } /* Ẩn phần màu xanh trên mobile để form to ra */
+            .sidebar { position: absolute; top: 0; left: -280px; height: 100%; box-shadow: 5px 0 20px rgba(0,0,0,0.1); z-index: 9999; border-right:none;}
             .sidebar.open { left: 0; }
-            .content { padding: 15px; }
+            .content { padding: 15px; padding-bottom: 80px; }
             .legal-paper { padding: 20px !important; font-size: 11pt !important; }
         }
-        #overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 9998; display:none; }
+        #overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); z-index: 9998; display:none; backdrop-filter: blur(2px); }
 
-        .user-panel { padding:20px; background:linear-gradient(135deg, var(--pri), var(--sec)); color:white; display:flex; align-items:center; gap:15px; position:relative; overflow:hidden; }
-        .bg-cover { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity: 0.3; z-index: 0; }
-        .avatar-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid white; background:#ccc; display:flex; align-items:center; justify-content:center; z-index:1; position:relative; }
+        /* --- SIDEBAR MENU --- */
+        .user-panel { padding:25px 20px; padding-top: max(25px, env(safe-area-inset-top)); background:white; color:var(--text-main); display:flex; align-items:center; gap:15px; position:relative; overflow:hidden; border-bottom: 1px solid #e2e8f0; }
+        .bg-cover { display: none; } /* Bỏ ảnh nền mờ để giống Figma */
+        .avatar-img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background:var(--pri); display:flex; align-items:center; justify-content:center; z-index:1; position:relative; box-shadow: 0 4px 10px rgba(26,86,219,0.2); }
         .user-info { z-index: 1; position:relative; }
         
-        .menu-cat { font-size:11px; font-weight:bold; color:#888; text-transform:uppercase; margin:15px 0 5px 10px; }
-        .menu-item { padding:12px 15px; border-radius:8px; cursor:pointer; display:flex; gap:12px; align-items:center; color:#555; font-weight:600; transition:0.2s; }
-        .menu-item:hover, .menu-item.active { background:#eef2ff; color:var(--pri); }
+        .menu-cat { font-size:11px; font-weight:700; color:var(--text-mut); text-transform:uppercase; margin:25px 0 10px 20px; letter-spacing: 0.5px; }
+        .menu-item { padding:12px 15px; margin: 0 15px 5px 15px; border-radius:10px; cursor:pointer; display:flex; gap:12px; align-items:center; color:var(--text-main); font-weight:500; transition:0.2s; }
+        .menu-item:hover { background:#f1f5f9; }
+        .menu-item.active { background: var(--sidebar-active-bg); color: var(--sidebar-text-active); font-weight: 600; }
         
-        .card { background:white; border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 2px 10px rgba(0,0,0,0.03); }
-        input, select, textarea { width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-bottom:10px; outline:none; box-sizing:border-box; font-family: inherit; }
-        
-        .btn { background:var(--pri); color:white; padding:10px 20px; border:none; border-radius:6px; font-weight:bold; cursor:pointer; transition:0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn:hover { opacity: 0.9; }
-        .btn:disabled { background: #ccc !important; cursor: not-allowed; opacity: 0.8; }
-        .btn-sm { padding: 5px 10px; font-size: 12px; }
-        .btn-warning { background: #f39c12; }
-        .btn-green { background: #00b894; }
-        .btn-blue { background: #0984e3; }
-        .btn-danger { background: #e74c3c; }
-        
-        .table-wrap { overflow-x: auto; }
-        table { width:100%; border-collapse:collapse; margin-top:10px; min-width: 600px; border: 1px solid #eee; }
-        th { text-align:left; color:#777; font-size:12px; text-transform:uppercase; padding:10px; border:1px solid #eee; background: #f8f9fa; text-align: center;}
-        td { padding:10px; border:1px solid #eee; vertical-align:middle; font-size: 13px; text-align: center;}
-        .badge { padding:4px 10px; border-radius:20px; font-size:11px; font-weight:bold; color:white; display: inline-block;}
-        .bg-ok { background:#00b894; } .bg-wait { background:#f39c12; color:#fff; } .bg-no { background:#e74c3c; }
+        /* --- COMPONENTS --- */
+        .card { background:var(--card-bg); border-radius:16px; padding:25px; margin-bottom:25px; box-shadow:0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-        .legal-paper { background: #fff; padding: 40px 50px; border: 1px solid #ccc; font-family: 'Times New Roman', serif; font-size: 14pt; line-height: 1.5; margin: 0 auto; max-width: 800px; box-shadow: 5px 5px 15px rgba(0,0,0,0.05); }
+        input, select, textarea { width:100%; padding:14px; border:1px solid #e2e8f0; background: #f8fafc; border-radius:10px; margin-bottom:15px; outline:none; box-sizing:border-box; font-family: 'Inter', sans-serif; font-size: 14px; transition: 0.2s; }
+        input:focus, select:focus, textarea:focus { border-color: var(--pri); background: white; box-shadow: 0 0 0 3px rgba(26,86,219,0.1); }
+        
+        .btn { background:var(--pri); color:white; padding:14px 20px; border:none; border-radius:10px; font-weight:600; cursor:pointer; transition:0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; box-shadow: 0 2px 4px rgba(26,86,219,0.1); font-family: 'Inter', sans-serif;}
+        .btn:hover { background: var(--pri-hover); }
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled { background: #cbd5e1 !important; cursor: not-allowed; box-shadow: none; color: #64748b;}
+        .btn-sm { padding: 8px 15px; font-size: 12px; border-radius: 8px; }
+        
+        .btn-warning { background: #f59e0b; box-shadow: 0 2px 4px rgba(245,158,11,0.1); } .btn-warning:hover { background: #d97706; }
+        .btn-green { background: #16a34a; box-shadow: 0 2px 4px rgba(22,163,74,0.1); } .btn-green:hover { background: #15803d; }
+        .btn-blue { background: #2563eb; } .btn-blue:hover { background: #1d4ed8; }
+        .btn-danger { background: #dc2626; box-shadow: 0 2px 4px rgba(220,38,38,0.1); } .btn-danger:hover { background: #b91c1c; }
+        
+        /* --- TABLES --- */
+        .table-wrap { overflow-x: auto; }
+        table { width:100%; border-collapse:collapse; margin-top:10px; min-width: 600px; }
+        th { text-align:left; color:var(--text-mut); font-size:12px; text-transform:uppercase; padding:15px; border-bottom:1px solid #e2e8f0; text-align: center; letter-spacing: 0.5px;}
+        td { padding:15px; border-bottom:1px solid #f1f5f9; vertical-align:middle; font-size: 14px; text-align: center;}
+        
+        .badge { padding:6px 12px; border-radius:20px; font-size:12px; font-weight:600; display: inline-block; white-space: nowrap;}
+        .bg-ok { background:#dcfce7; color:#166534; } 
+        .bg-wait { background:#fef3c7; color:#92400e; } 
+        .bg-no { background:#fee2e2; color:#991b1b; }
+
+        /* --- VĂN BẢN VÀ MODAL --- */
+        .legal-paper { background: #fff; padding: 40px 50px; border: 1px solid #e2e8f0; font-family: 'Times New Roman', serif; font-size: 14pt; line-height: 1.6; margin: 0 auto; max-width: 800px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .legal-header { text-align: center; margin-bottom: 20px; }
         .legal-title { text-align: center; font-weight: bold; text-transform: uppercase; font-size: 16pt; margin: 30px 0; }
-        .legal-input { border: none; border-bottom: 1px dotted #000; outline: none; width: auto; background: transparent; font-family: inherit; font-size: inherit; }
+        .legal-input { border: none; border-bottom: 1px dotted #999; outline: none; width: auto; background: transparent; font-family: inherit; font-size: inherit; border-radius: 0; padding: 0;}
         
-        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 10000; padding:15px; box-sizing:border-box;}
-        .modal-box { background: white; width: 100%; max-width: 600px; border-radius: 15px; padding: 25px; position: relative; max-height:90vh; overflow-y:auto;}
+        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); display: none; justify-content: center; align-items: center; z-index: 10000; padding:15px; box-sizing:border-box; backdrop-filter: blur(4px);}
+        .modal-box { background: white; width: 100%; max-width: 600px; border-radius: 20px; padding: 30px; position: relative; max-height:90vh; overflow-y:auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);}
         
-        .hw-item { border: 1px solid #eee; border-left: 4px solid var(--pri); border-radius: 8px; padding: 15px; margin-bottom: 15px; }
-        .hw-title { font-size: 16px; font-weight: bold; color: var(--pri); margin-bottom: 5px; }
-        .hw-meta { font-size: 12px; color: #666; margin-bottom: 10px; display:flex; gap:15px; flex-wrap:wrap;}
-        .hw-desc { font-size: 14px; background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
-        .text-danger { color: #e74c3c; font-weight: bold; }
+        /* --- CUSTOM ITEMS CHO BÀI TẬP VÀ TKB --- */
+        .hw-item { border: 1px solid #e2e8f0; border-left: 4px solid var(--pri); border-radius: 12px; padding: 20px; margin-bottom: 15px; }
+        .hw-title { font-size: 16px; font-weight: 700; color: var(--pri); margin-bottom: 5px; }
+        .hw-meta { font-size: 13px; color: var(--text-mut); margin-bottom: 15px; display:flex; gap:15px; flex-wrap:wrap;}
+        .hw-desc { font-size: 14px; background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #e2e8f0;}
+        .text-danger { color: #dc2626; font-weight: bold; }
         
-        .tkb-input { width: 100%; border: none; text-align: center; background: transparent; font-size: 13px; padding: 5px; box-sizing:border-box; }
-        .tkb-input:focus { background: #eef2ff; outline: 1px solid var(--pri); border-radius: 4px; }
+        .tkb-input { width: 100%; border: none; text-align: center; background: transparent; font-size: 13px; padding: 8px; box-sizing:border-box; font-family: 'Inter', sans-serif;}
+        .tkb-input:focus { background: #eff6ff; outline: 1px solid var(--pri); border-radius: 6px; }
+        .flex-control { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;}
+        .flex-control h2 { margin: 0; }
     </style>
 </head>
 <body>
 
     <div id="loading">
         <div class="spinner"></div>
-        <p style="margin-top:15px; font-weight:bold; color:var(--pri); font-size:16px" id="loadingText">Đang tải dữ liệu hệ thống...</p>
+        <p style="margin-top:15px; font-weight:bold; color:var(--pri); font-size:14px" id="loadingText">Đang tải dữ liệu hệ thống...</p>
     </div>
 
     <div id="loginWrap">
-        <div class="login-box">
-            <h2 style="color:var(--pri); margin-bottom:5px" id="lbl_loginClass">...</h2>
-            <p style="color:#555; font-weight:bold; font-size:12px; margin-bottom:20px; text-transform:uppercase" id="lbl_loginSchool">HỆ THỐNG QUẢN LÝ</p>
-            <input id="user" placeholder="Tên đăng nhập (VD: m.an)">
-            <input id="pass" type="password" placeholder="Mật khẩu">
-            <button class="btn" style="width:100%" onclick="App.login()" id="btnLogin">Đăng Nhập</button>
+        <div class="login-split-desc">
+            <div class="login-desc-content">
+                <h1 id="lbl_loginClass">...</h1>
+                <p id="lbl_loginSchool">HỆ THỐNG QUẢN LÝ</p>
+                <div style="font-size: 16px; opacity: 0.8; line-height: 1.6; max-width: 80%;">Nền tảng số hóa giáo dục toàn diện, kết nối giáo viên và học sinh trong một hệ sinh thái thống nhất.</div>
+            </div>
+            <div class="login-illustration"><i class="fa fa-graduation-cap"></i></div>
+        </div>
+        <div class="login-split-form">
+            <div class="login-box">
+                <h2>Đăng nhập</h2>
+                <p>Nhập thông tin tài khoản để tiếp tục</p>
+                <input id="user" placeholder="Tên đăng nhập (VD: m.an)">
+                <input id="pass" type="password" placeholder="Mật khẩu">
+                <button class="btn" style="width:100%; margin-top:10px" onclick="App.login()" id="btnLogin">Đăng Nhập <i class="fa fa-arrow-right" style="margin-left: 5px;"></i></button>
+            </div>
         </div>
     </div>
 
     <div class="mobile-header">
         <button class="menu-btn" onclick="UI.toggleMenu()"><i class="fa fa-bars"></i></button>
-        <span id="lbl_mobileTitle">HỆ THỐNG QUẢN LÝ</span>
-        <div style="width:20px"></div>
+        <span id="lbl_mobileTitle">EduClass</span>
+        <div style="width:30px; height:30px; background:var(--pri); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:12px;"><i class="fa fa-user"></i></div>
     </div>
 
     <div id="appWrap">
@@ -113,17 +166,17 @@
         
         <div class="sidebar" id="sidebar">
             <div class="user-panel" id="userPanel"></div>
-            <div class="menu-scroll" id="menuArea" style="flex:1; overflow-y:auto; padding:10px;"></div>
-            <div style="padding:15px; border-top:1px solid #eee">
-                <button class="btn btn-green" onclick="Network.syncData()" style="width:100%; margin-bottom:10px;" id="btnSync"><i class="fa fa-sync"></i> Đồng bộ dữ liệu</button>
-                <button onclick="location.reload()" class="btn" style="width:100%; background:#fff; color:#ff7675; border:1px solid #ff7675"><i class="fa fa-power-off"></i> Đăng xuất</button>
+            <div class="menu-scroll" id="menuArea" style="flex:1; overflow-y:auto; padding:15px 0;"></div>
+            <div style="padding:20px; border-top:1px solid #e2e8f0">
+                <button class="btn btn-green" onclick="Network.syncData()" style="width:100%; margin-bottom:12px; background:#e0f7fa; color: #006064; box-shadow:none;" id="btnSync"><i class="fa fa-sync"></i> Đồng bộ dữ liệu</button>
+                <button onclick="location.reload()" class="btn" style="width:100%; background:#fff; color:#ef4444; border:1px solid #ef4444; box-shadow:none;"><i class="fa fa-sign-out-alt"></i> Đăng xuất</button>
             </div>
         </div>
 
         <div class="content">
             <div class="main-header">
-                <div class="school-name"> <i class="fa fa-school"></i> <span id="lbl_schoolName">...</span> - <span id="lbl_className">...</span></div>
-                <div style="font-size:13px; color:#666">Năm học: <span id="lbl_year">...</span></div>
+                <div class="school-name" style="font-weight: 600; font-size: 16px;"> <i class="fa fa-school" style="color:var(--pri); margin-right:8px;"></i> <span id="lbl_schoolName">...</span> - <span id="lbl_className">...</span></div>
+                <div style="font-size:13px; color:var(--text-mut); font-weight: 500;"><i class="fa fa-calendar-alt"></i> Năm học: <span id="lbl_year">...</span></div>
             </div>
             <div id="mainContent"></div>
         </div>
@@ -131,15 +184,15 @@
 
     <div id="replyModal" class="modal">
         <div class="modal-box" style="max-width:500px">
-            <h3 style="margin-top:0; color:var(--pri)">💬 Phản Hồi Đơn</h3>
-            <div style="margin-bottom: 15px; font-weight: bold;">Trạng thái: <span id="statusPreview" class="badge" style="background:#eee; color:#333">Chưa chọn</span></div>
-            <textarea id="replyTxt" style="height:80px; margin-bottom:15px" placeholder="Nhập nội dung phản hồi (nếu có)..."></textarea>
+            <h3 style="margin-top:0; color:var(--text-main); font-size: 20px;">💬 Phản Hồi Đơn</h3>
+            <div style="margin-bottom: 15px; font-size: 14px;">Trạng thái: <span id="statusPreview" class="badge" style="background:#f1f5f9; color:#64748b">Chưa chọn</span></div>
+            <textarea id="replyTxt" style="height:100px; margin-bottom:15px" placeholder="Nhập nội dung phản hồi (nếu có)..."></textarea>
             <div style="display:flex; gap:10px; margin-bottom:20px">
-                <button id="btnApprove" class="btn btn-sm btn-green" style="flex:1; transition:0.3s;" onclick="Features.selectStatus('Đã duyệt')"><i class="fa fa-check"></i> Chọn Sẽ Duyệt</button>
-                <button id="btnReject" class="btn btn-sm btn-danger" style="flex:1; transition:0.3s;" onclick="Features.selectStatus('Hủy')"><i class="fa fa-times"></i> Chọn Từ Chối</button>
+                <button id="btnApprove" class="btn btn-sm btn-green" style="flex:1; transition:0.3s; background:white; color:#16a34a; border:1px solid #16a34a; box-shadow:none;" onclick="Features.selectStatus('Đã duyệt')"><i class="fa fa-check"></i> Sẽ Duyệt</button>
+                <button id="btnReject" class="btn btn-sm btn-danger" style="flex:1; transition:0.3s; background:white; color:#dc2626; border:1px solid #dc2626; box-shadow:none;" onclick="Features.selectStatus('Hủy')"><i class="fa fa-times"></i> Từ Chối</button>
             </div>
             <div style="display:flex; gap:10px;">
-                <button class="btn" style="background:#ddd; color:#333; flex:1" onclick="document.getElementById('replyModal').style.display='none'">Đóng</button>
+                <button class="btn" style="background:#f1f5f9; color:#333; flex:1; box-shadow:none;" onclick="document.getElementById('replyModal').style.display='none'">Đóng</button>
                 <button class="btn btn-blue" id="btnReplySubmit" style="flex:1" onclick="Features.submitReplyFinal()"><i class="fa fa-paper-plane"></i> Gửi Phản Hồi</button>
             </div>
         </div>
@@ -147,18 +200,18 @@
 
     <div id="createHwModal" class="modal">
         <div class="modal-box">
-            <h3 style="margin-top:0; color:var(--pri)">📝 Giao Bài Tập Mới</h3>
-            <label>Tiêu đề bài tập:</label>
+            <h3 style="margin-top:0; color:var(--text-main); font-size: 20px;">📝 Giao Bài Tập Mới</h3>
+            <label style="font-size:13px; font-weight:600; color:var(--text-mut);">Tiêu đề bài tập:</label>
             <input type="text" id="hwTitle" placeholder="VD: Làm bài tập Toán trang 15...">
-            <label>Hướng dẫn chi tiết:</label>
+            <label style="font-size:13px; font-weight:600; color:var(--text-mut);">Hướng dẫn chi tiết:</label>
             <textarea id="hwDesc" style="height:80px;" placeholder="Các em nhớ làm cẩn thận..."></textarea>
-            <label>Hạn nộp (Deadline):</label>
+            <label style="font-size:13px; font-weight:600; color:var(--text-mut);">Hạn nộp (Deadline):</label>
             <input type="datetime-local" id="hwDeadline">
-            <label>Link đính kèm (G.Drive, Youtube...) - Không bắt buộc:</label>
+            <label style="font-size:13px; font-weight:600; color:var(--text-mut);">Link đính kèm (G.Drive, Youtube...) - Không bắt buộc:</label>
             <input type="url" id="hwLink" placeholder="https://...">
             
             <div style="display:flex; gap:10px; margin-top:20px">
-                <button class="btn" style="background:#ddd; color:#333; flex:1" onclick="document.getElementById('createHwModal').style.display='none'">Hủy</button>
+                <button class="btn" style="background:#f1f5f9; color:#333; flex:1; box-shadow:none" onclick="document.getElementById('createHwModal').style.display='none'">Hủy</button>
                 <button class="btn" id="btnCreateHW" style="flex:1" onclick="Features.submitNewHW()">Giao Bài Ngay</button>
             </div>
         </div>
@@ -170,7 +223,7 @@
 
     <script>
         /* ==========================================================================
-           PHẦN 1: CẤU HÌNH API & DISCORD (ĐÃ ĐIỀN ĐỦ LINK CỦA BẠN 100%)
+           PHẦN 1: CẤU HÌNH API & DISCORD (GIỮ NGUYÊN 100% CODE CỦA BẠN)
            ========================================================================== */
         const CONFIG = {
             API_URL: "https://script.google.com/macros/s/AKfycbz5nIFpRMyvaDup5bwzRigkw7zr-n99mppGLY-u7QjLoZb_nv1GOErafeJAoZpU5jpn/exec", 
@@ -254,11 +307,10 @@
                 if(CURRENT_USER) {
                     const avatarUrl = DB.avatars[CURRENT_USER.u] || 'https://i.imgur.com/6VBx3io.png';
                     document.getElementById('userPanel').innerHTML = `
-                        <img src="${avatarUrl}" class="bg-cover">
                         <div class="avatar-img"><img src="${avatarUrl}" style="width:100%; height:100%; border-radius:50%; object-fit:cover"></div>
                         <div class="user-info">
-                            <div style="font-weight:bold; font-size:15px">${CURRENT_USER.n}</div>
-                            <small style="opacity:0.9">${CURRENT_USER.r.toUpperCase()}</small>
+                            <div style="font-weight:700; font-size:15px">${CURRENT_USER.n}</div>
+                            <small style="color:var(--text-mut); font-weight:500;">${CURRENT_USER.r.toUpperCase()}</small>
                         </div>`;
                 }
             }
@@ -323,7 +375,7 @@
                 await Network.loadData(); 
                 let checkList = (DB.users && DB.users.length > 0) ? DB.users : USERS_INIT;
                 const f = checkList.find(x => x.u === u && x.p === p);
-                UI.hideLoading(); btn.disabled = false; btn.innerText = "Đăng Nhập";
+                UI.hideLoading(); btn.disabled = false; btn.innerHTML = 'Đăng Nhập <i class="fa fa-arrow-right" style="margin-left: 5px;"></i>';
 
                 if (f) {
                     CURRENT_USER = f; document.getElementById('loginWrap').style.display = 'none'; document.getElementById('appWrap').style.display = 'flex';
@@ -383,7 +435,7 @@
                         const isOverdue = new Date(h.deadline) < now;
                         let status = `<span class="badge bg-wait">Chưa nộp</span>`;
                         if(mySub && mySub.grade) status = `<span class="badge bg-ok">Đã chấm: ${mySub.grade}</span>`;
-                        else if(mySub) status = `<span class="badge btn-blue">Đã nộp</span>`;
+                        else if(mySub) status = `<span class="badge" style="background:#2563eb; color:white;">Đã nộp</span>`;
                         else if(isOverdue) status = `<span class="badge bg-no">Quá hạn</span>`;
 
                         hHtml += `
@@ -394,11 +446,11 @@
                             </div>
                             <div class="hw-meta">
                                 <span><i class="fa fa-clock"></i> Hạn nộp: <b class="${isOverdue ? 'text-danger':''}">${Utils.formatDate(h.deadline)}</b></span>
-                                ${h.link ? `<a href="${h.link}" target="_blank" style="color:var(--pri); font-weight:bold"><i class="fa fa-link"></i> Link tài liệu GV</a>` : ''}
+                                ${h.link ? `<a href="${h.link}" target="_blank" style="color:var(--pri); font-weight:bold; text-decoration:none;"><i class="fa fa-link"></i> Link tài liệu GV</a>` : ''}
                             </div>
                             <div class="hw-desc">${h.desc || 'Không có ghi chú thêm.'}</div>
                             
-                            <button class="btn btn-sm ${mySub ? 'btn-blue' : (isOverdue ? 'btn-danger':'')}" onclick="Features.openHwSubmit('${h.id}')">
+                            <button class="btn btn-sm ${mySub ? 'btn-blue' : (isOverdue ? 'btn-danger':'')}" onclick="Features.openHwSubmit('${h.id}')" style="margin-top: 5px;">
                                 ${mySub ? '<i class="fa fa-eye"></i> Xem bài đã nộp' : (isOverdue ? '<i class="fa fa-lock"></i> Đã Khóa (Hết hạn)' : '<i class="fa fa-upload"></i> Nộp bài ngay')}
                             </button>
                         </div>`;
@@ -407,9 +459,9 @@
                 }
                 
                 else if(page === 'hw_manage') {
-                    let mHtml = `<div class="flex-control" style="justify-content:space-between">
+                    let mHtml = `<div class="flex-control">
                                     <h2>📝 Quản Lý Bài Tập</h2>
-                                    <button class="btn btn-green" onclick="document.getElementById('createHwModal').style.display='flex'">+ Giao Bài Mới</button>
+                                    <button class="btn btn-blue" onclick="document.getElementById('createHwModal').style.display='flex'">+ Giao Bài Mới</button>
                                  </div>`;
                     if(!DB.hw || DB.hw.length === 0) mHtml += `<div class="card">Chưa giao bài tập nào.</div>`;
                     
@@ -427,7 +479,7 @@
                                 <span><i class="fa fa-clock"></i> Hạn: <b class="${isOverdue ? 'text-danger':''}">${Utils.formatDate(h.deadline)}</b></span>
                                 <span><i class="fa fa-users"></i> Đã nộp: <b style="color:var(--pri)">${totalSubs}/${STUDENT_LIST.length}</b></span>
                             </div>
-                            <button class="btn btn-sm btn-blue" onclick="Features.openHwGrade('${h.id}')"><i class="fa fa-edit"></i> Xem & Chấm Bài</button>
+                            <button class="btn btn-sm btn-blue" onclick="Features.openHwGrade('${h.id}')" style="margin-top:5px;"><i class="fa fa-edit"></i> Xem & Chấm Bài</button>
                         </div>`;
                     });
                     c.innerHTML = mHtml;
@@ -450,7 +502,7 @@
 
                         if (isExcused) {
                             statusBadge = '<span class="badge bg-wait"><i class="fa fa-envelope"></i> Vắng có phép</span>';
-                            if (canEdit) actionBtn = '<small style="color:#888; font-style:italic">Auto từ đơn</small>';
+                            if (canEdit) actionBtn = '<small style="color:var(--text-mut); font-style:italic">Auto từ đơn</small>';
                         } else if (isUnexcused) {
                             statusBadge = '<span class="badge bg-no"><i class="fa fa-times-circle"></i> Vắng KHÔNG phép</span>';
                             if (canEdit) actionBtn = `<button class="btn btn-sm btn-green" onclick="Features.toggleAttendance('${s.id}', '${todayStr}')">Hủy vắng</button>`;
@@ -461,8 +513,8 @@
 
                         clsHtml += `<tr>
                                         <td>${idx + 1}</td>
-                                        <td><img src="${ava}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid #ddd; box-shadow:0 2px 4px rgba(0,0,0,0.1);"></td>
-                                        <td style="font-family:monospace; color:#888">${s.id}</td>
+                                        <td><img src="${ava}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid #e2e8f0;"></td>
+                                        <td style="font-family:monospace; color:var(--text-mut)">${s.id}</td>
                                         <td style="text-align:center;"><b>${s.name}</b></td>
                                         <td>${statusBadge}</td>
                                         ${canEdit ? `<td>${actionBtn}</td>` : '<td>-</td>'}
@@ -474,57 +526,56 @@
                 else if(page === 'profile') {
                     const avatarUrl = DB.avatars[CURRENT_USER.u] || '';
                     c.innerHTML = `
-                        <h2><i class="fa fa-user-circle"></i> Hồ Sơ Cá Nhân</h2>
+                        <h2><i class="fa fa-user-circle" style="color:var(--pri)"></i> Hồ Sơ Cá Nhân</h2>
                         <div class="card" style="max-width:500px">
-                            <label style="font-weight:bold">Mã định danh (ID):</label>
-                            <input type="text" value="${CURRENT_USER.u}" disabled style="background:#eee; font-family:monospace">
+                            <label style="font-weight:600; font-size:13px; color:var(--text-mut);">Mã định danh (ID):</label>
+                            <input type="text" value="${CURRENT_USER.u}" disabled style="background:#f1f5f9; font-family:monospace; color:var(--text-mut)">
                             
-                            <label style="font-weight:bold; margin-top:10px; display:block">Link Ảnh Đại Diện / Ảnh bìa:</label>
-                            <div style="font-size:12px; color:#888; margin-bottom:5px">⚠️ Hãy tải ảnh lên trang <a href="https://postimages.org/" target="_blank" style="color:var(--pri)">Postimages</a>, copy "Direct link" và dán vào đây. Không dán ảnh trực tiếp từ máy để tránh lỗi!</div>
+                            <label style="font-weight:600; font-size:13px; color:var(--text-mut); margin-top:10px; display:block">Link Ảnh Đại Diện:</label>
+                            <div style="font-size:12px; color:var(--text-mut); margin-bottom:10px; background:#f8fafc; padding:10px; border-radius:8px;">⚠️ Hãy tải ảnh lên <a href="https://postimages.org/" target="_blank" style="color:var(--pri); font-weight:600;">Postimages</a>, copy "Direct link" và dán vào đây.</div>
                             <input type="url" id="inpAvatar" placeholder="https://..." value="${avatarUrl}">
                             
-                            <hr style="border:0; border-top:1px solid #eee; margin:20px 0">
-                            <label style="font-weight:bold">Đổi Mật Khẩu:</label>
-                            <input type="password" id="oldP" placeholder="Mật khẩu cũ">
+                            <hr style="border:0; border-top:1px solid #e2e8f0; margin:25px 0">
+                            <label style="font-weight:600; font-size:13px; color:var(--text-mut);">Đổi Mật Khẩu:</label>
+                            <input type="password" id="oldP" placeholder="Mật khẩu hiện tại">
                             <input type="password" id="newP" placeholder="Mật khẩu mới">
                             
-                            <button class="btn" id="btnUpdateProfile" style="margin-top:15px; width:100%" onclick="Features.updateProfile()"><i class="fa fa-save"></i> LƯU THAY ĐỔI</button>
+                            <button class="btn btn-blue" id="btnUpdateProfile" style="margin-top:15px; width:100%" onclick="Features.updateProfile()"><i class="fa fa-save"></i> LƯU THAY ĐỔI</button>
                         </div>`;
                 }
 
                 else if(page === 'accounts') { 
                     const studs = DB.users.filter(u => u.r === 'student'); 
-                    let accHtml = `<h2>⚙️ Quản lý Mật khẩu Học sinh</h2><div class="card"><p style="color:#e74c3c; font-size:13px; margin-bottom:15px"><i class="fa fa-exclamation-triangle"></i> Dùng chức năng này để cấp lại mật khẩu khi học sinh quên.</p><div class="table-wrap"><table><thead><tr><th>Ảnh</th><th>Mã ID</th><th>Họ Tên</th><th>Pass hiện tại</th><th>Thao tác</th></tr></thead><tbody>`; 
+                    let accHtml = `<h2>⚙️ Quản lý Mật khẩu Học sinh</h2><div class="card"><p style="color:var(--text-mut); font-size:13px; margin-bottom:20px; padding:10px; background:#f8fafc; border-radius:8px;"><i class="fa fa-info-circle" style="color:var(--pri)"></i> Cấp lại mật khẩu khi học sinh quên.</p><div class="table-wrap"><table><thead><tr><th>Ảnh</th><th>Mã ID</th><th>Họ Tên</th><th>Pass hiện tại</th><th>Thao tác</th></tr></thead><tbody>`; 
                     studs.forEach(s => { 
                         const ava = DB.avatars[s.u] || 'https://i.imgur.com/6VBx3io.png';
                         accHtml += `<tr>
-                                        <td><img src="${ava}" style="width:35px; height:35px; border-radius:50%; object-fit:cover; border:1px solid #ddd;"></td>
-                                        <td><b>${s.u}</b></td>
-                                        <td>${s.n}</td>
-                                        <td style="font-family:monospace; background:#f9f9f9">${s.p}</td>
+                                        <td><img src="${ava}" style="width:35px; height:35px; border-radius:50%; object-fit:cover; border:1px solid #e2e8f0;"></td>
+                                        <td style="color:var(--text-mut)"><b>${s.u}</b></td>
+                                        <td style="font-weight:500;">${s.n}</td>
+                                        <td style="font-family:monospace; background:#f8fafc; border-radius:6px;">${s.p}</td>
                                         <td><button class="btn btn-sm btn-warning" onclick="Features.changePassByAdmin('${s.u}', '${s.n}')">Đổi MK</button></td>
                                     </tr>`; 
                     }); 
                     c.innerHTML = accHtml + `</tbody></table></div></div>`; 
                 }
 
-                else if(page === 'rules') c.innerHTML = `<div style="display:flex; gap:20px; flex-wrap:wrap;"><div class="card" style="flex:1; min-width:280px"><h3>🏛️ NỘI QUY ${DB.config.schoolName}</h3><ul><li>Đi học đúng giờ.</li><li>Lễ phép với thầy cô.</li><li>Giữ gìn vệ sinh chung.</li></ul></div><div class="card" style="flex:1; min-width:280px"><h3>🏫 NỘI QUY ${DB.config.className}</h3><ul><li>Truy bài 15 phút đầu giờ.</li><li>Không dùng điện thoại trong giờ.</li><li>Đoàn kết, giúp đỡ bạn bè.</li></ul></div></div>`;
+                else if(page === 'rules') c.innerHTML = `<div style="display:flex; gap:20px; flex-wrap:wrap;"><div class="card" style="flex:1; min-width:280px"><h3 style="color:var(--pri); margin-top:0;"><i class="fa fa-school"></i> NỘI QUY TRƯỜNG</h3><ul style="line-height:1.8; color:var(--text-main);"><li>Đi học đúng giờ.</li><li>Lễ phép với thầy cô.</li><li>Giữ gìn vệ sinh chung.</li></ul></div><div class="card" style="flex:1; min-width:280px"><h3 style="color:var(--pri); margin-top:0;"><i class="fa fa-users-cog"></i> NỘI QUY LỚP</h3><ul style="line-height:1.8; color:var(--text-main);"><li>Truy bài 15 phút đầu giờ.</li><li>Không dùng điện thoại trong giờ.</li><li>Đoàn kết, giúp đỡ bạn bè.</li></ul></div></div>`;
                 
-                // CẬP NHẬT: GIAO DIỆN THỜI KHÓA BIỂU (SÁNG / CHIỀU)
                 else if(page === 'schedule') { 
                     const canEditTkb = (CURRENT_USER.r === 'teacher' || CURRENT_USER.r === 'admin'); 
                     let optTkb = ''; 
                     DB.scheduleList.forEach(s => optTkb += `<option value="${s}">${s}</option>`); 
-                    c.innerHTML = `<div class="flex-control"><h2>📅 Thời Khóa Biểu</h2><select id="tkbSelect" onchange="Features.loadScheduleView()" style="flex:1">${optTkb}</select>${canEditTkb ? `<button class="btn btn-green" onclick="Features.addTKBVersion()">+ Thêm Giai đoạn</button>` : ''}</div><div class="card" id="tkbContainer"></div>${canEditTkb ? `<button class="btn" style="margin-top:10px" id="btnSaveTKB" onclick="Features.saveSchedule()"><i class="fa fa-save"></i> Lưu Thời Khóa Biểu này</button>` : ''}`; 
+                    c.innerHTML = `<div class="flex-control"><h2>📅 Thời Khóa Biểu</h2><select id="tkbSelect" onchange="Features.loadScheduleView()" style="flex:1; max-width:250px; margin-bottom:0;">${optTkb}</select>${canEditTkb ? `<button class="btn btn-blue" onclick="Features.addTKBVersion()">+ Thêm Giai đoạn</button>` : ''}</div><div class="card" id="tkbContainer" style="padding:0; overflow:hidden;"></div>${canEditTkb ? `<button class="btn btn-blue" style="margin-top:10px" id="btnSaveTKB" onclick="Features.saveSchedule()"><i class="fa fa-save"></i> Lưu Thời Khóa Biểu</button>` : ''}`; 
                     Features.loadScheduleView(); 
                 }
                 
-                else if(page === 'form') { c.innerHTML = `<div class="card"><div class="flex-control" style="justify-content:space-between"><h2>📝 Soạn Văn Bản</h2><select id="fType" onchange="Features.renderFormPaper()" style="width:200px"><option value="nghi">Đơn xin nghỉ học</option><option value="tuongtrinh">Bản tường trình</option><option value="camket">Bản cam kết</option></select></div><div id="paperArea" style="background:#ccc; padding:20px;"></div><button class="btn" id="btnSendForm" style="margin-top:20px; width:100%" onclick="Features.sendForm()"><i class="fa fa-paper-plane"></i> GỬI ĐƠN NÀY LÊN GIÁO VIÊN</button></div>`; Features.renderFormPaper(); }
-                else if(page === 'mailbox') { const myReqs = DB.reqs.filter(r => r.sid === CURRENT_USER.u).reverse(); let mailHtml = `<h2>📬 Hộp Thư Đơn Từ</h2><div class="card">`; if(myReqs.length === 0) mailHtml += `<p>Trống.</p>`; myReqs.forEach(r => { let badgeClass = r.st === 'Đã duyệt' ? 'bg-ok' : (r.st === 'Hủy' ? 'bg-no' : 'bg-wait'); mailHtml += `<div style="border-bottom:1px solid #eee; padding:15px 0"><div style="display:flex; justify-content:space-between"><b style="color:var(--pri)">${r.type}</b><span class="badge ${badgeClass}">${r.st}</span></div><div style="font-size:13px; color:#555; margin-top:5px">Ngày: ${r.date}</div><div style="background:#f9f9f9; padding:10px; margin-top:10px; border-left:3px solid var(--pri)"><b>💬 GV Nhắn:</b> ${r.reply || '<i>Đang chờ...</i>'}</div></div>`; }); c.innerHTML = mailHtml + `</div>`; }
-                else if(page === 'approve') { const allReqs = DB.reqs.filter(r => CURRENT_USER.r === 'admin' || r.cls === CURRENT_USER.c).reverse(); let tblHtml = `<h2>✅ Duyệt Đơn Từ HS</h2><div class="card"><div class="table-wrap"><table><thead><tr><th>Học sinh</th><th>Loại Đơn</th><th>Nội dung</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>`; if(allReqs.length === 0) tblHtml += `<tr><td colspan="5">Trống</td></tr>`; allReqs.forEach(r => { let badge = r.st === 'Đã duyệt' ? 'bg-ok' : (r.st === 'Hủy' ? 'bg-no' : 'bg-wait'); let actionBtn = (r.st === 'Chờ' && CURRENT_USER.r !== 'admin') ? `<button class="btn btn-sm btn-blue" onclick="Features.openReply('${r.id}')"><i class="fa fa-reply"></i> Phản hồi</button>` : (r.st === 'Chờ' ? 'Chờ GV' : `<span style="color:#00b894; font-size:12px; font-weight:bold"><i class="fa fa-check"></i> Đã xử lý</span>`); tblHtml += `<tr><td><b>${r.sname}</b><br><small>${r.sid}</small></td><td>${r.secure?'<i class="fa fa-lock" style="color:red"></i> ':''}${r.type}</td><td><b style="color:#666">${r.date}</b><br>${r.txt}</td><td><span class="badge ${badge}">${r.st}</span></td><td>${actionBtn}</td></tr>`; }); c.innerHTML = tblHtml + `</tbody></table></div></div>`; }
-                else if(page === 'grading') { let optWeek = ''; DB.weekList.forEach(w => optWeek += `<option value="${w}">${w}</option>`); c.innerHTML = `<div class="flex-control"><h2>✍️ Chấm Điểm Thi Đua</h2><select id="wSelect" onchange="Features.loadWeekData()" style="flex:1">${optWeek}</select><button class="btn btn-green" onclick="Features.addWeekVersion()">+ Tuần Mới</button></div><div class="card"><div class="table-wrap"><table><thead><tr><th>Ảnh</th><th>Mã HS</th><th>Họ Tên</th><th>Điểm</th><th>Xếp loại</th><th>Ghi chú</th></tr></thead><tbody id="gradeTable"></tbody></table></div></div><button class="btn" id="btnSaveGrade" style="margin-top:20px; width:100%" onclick="Features.saveGrades()"><i class="fa fa-save"></i> LƯU ĐIỂM</button>`; Features.loadWeekData(); }
-                else if(page === 'my_rank') { const myW = DB.weekly.filter(w => w.sid === CURRENT_USER.u); let rankHtml = `<h2>🏆 Điểm Thi Đua Cá Nhân</h2><div class="card"><div class="table-wrap"><table><thead><tr><th>Tuần</th><th>Điểm</th><th>Xếp loại</th><th>Nhận xét</th></tr></thead><tbody>`; if(myW.length === 0) rankHtml += `<tr><td colspan="4">Trống</td></tr>`; myW.forEach(w => { let b = w.rank === 'Tốt' ? 'bg-ok' : 'bg-wait'; rankHtml += `<tr><td><b>${w.week}</b></td><td style="color:var(--pri); font-weight:bold; font-size:16px">${w.score}</td><td><span class="badge ${b}">${w.rank}</span></td><td>${w.note}</td></tr>`; }); c.innerHTML = rankHtml + `</tbody></table></div></div>`; }
-                else if(page === 'settings') { c.innerHTML = `<h2>🔧 Cài đặt Hệ Thống</h2><div class="card"><label>Tên Lớp:</label><input id="set_class" value="${DB.config.className}"><label>Tên Trường:</label><input id="set_school" value="${DB.config.schoolName}"><label>Niên khóa:</label><input id="set_year" value="${DB.config.year}"><button class="btn btn-green" id="btnSaveSet" style="margin-top:20px; width:100%" onclick="Features.saveSettings()">LƯU</button></div>`; }
+                else if(page === 'form') { c.innerHTML = `<div class="card"><div class="flex-control" style="border-bottom:1px solid #e2e8f0; padding-bottom:15px; margin-bottom:25px;"><h2>📝 Soạn Văn Bản</h2><select id="fType" onchange="Features.renderFormPaper()" style="width:200px; margin-bottom:0;"><option value="nghi">Đơn xin nghỉ học</option><option value="tuongtrinh">Bản tường trình</option><option value="camket">Bản cam kết</option></select></div><div id="paperArea" style="background:#f8fafc; padding:20px; border-radius:12px; border:1px solid #e2e8f0;"></div><button class="btn btn-blue" id="btnSendForm" style="margin-top:20px; width:100%" onclick="Features.sendForm()"><i class="fa fa-paper-plane"></i> GỬI ĐƠN LÊN GIÁO VIÊN</button></div>`; Features.renderFormPaper(); }
+                else if(page === 'mailbox') { const myReqs = DB.reqs.filter(r => r.sid === CURRENT_USER.u).reverse(); let mailHtml = `<h2>📬 Hộp Thư Đơn Từ</h2><div class="card">`; if(myReqs.length === 0) mailHtml += `<p style="color:var(--text-mut); text-align:center;">Chưa gửi đơn nào.</p>`; myReqs.forEach(r => { let badgeClass = r.st === 'Đã duyệt' ? 'bg-ok' : (r.st === 'Hủy' ? 'bg-no' : 'bg-wait'); mailHtml += `<div style="border-bottom:1px solid #e2e8f0; padding:20px 0"><div style="display:flex; justify-content:space-between; align-items:center;"><b style="color:var(--pri); font-size:15px;">${r.type}</b><span class="badge ${badgeClass}">${r.st}</span></div><div style="font-size:13px; color:var(--text-mut); margin-top:8px"><i class="fa fa-calendar-alt"></i> Ngày gửi: ${r.date}</div><div style="background:#f8fafc; padding:15px; margin-top:15px; border-radius:8px; border-left:3px solid var(--pri); font-size:14px;"><b>💬 GV Nhắn:</b> <span style="color:var(--text-mut)">${r.reply || '<i>Đang chờ duyệt...</i>'}</span></div></div>`; }); c.innerHTML = mailHtml + `</div>`; }
+                else if(page === 'approve') { const allReqs = DB.reqs.filter(r => CURRENT_USER.r === 'admin' || r.cls === CURRENT_USER.c).reverse(); let tblHtml = `<h2>✅ Duyệt Đơn Từ HS</h2><div class="card" style="padding:0; overflow:hidden;"><div class="table-wrap"><table style="margin-top:0;"><thead><tr><th>Học sinh</th><th>Loại Đơn</th><th>Nội dung</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>`; if(allReqs.length === 0) tblHtml += `<tr><td colspan="5" style="color:var(--text-mut);">Trống</td></tr>`; allReqs.forEach(r => { let badge = r.st === 'Đã duyệt' ? 'bg-ok' : (r.st === 'Hủy' ? 'bg-no' : 'bg-wait'); let actionBtn = (r.st === 'Chờ' && CURRENT_USER.r !== 'admin') ? `<button class="btn btn-sm btn-blue" onclick="Features.openReply('${r.id}')">Phản hồi</button>` : (r.st === 'Chờ' ? '<span style="color:var(--text-mut)">Chờ GV</span>' : `<span style="color:#16a34a; font-size:13px; font-weight:600"><i class="fa fa-check-circle"></i> Đã xử lý</span>`); tblHtml += `<tr><td><b>${r.sname}</b><br><small style="color:var(--text-mut)">${r.sid}</small></td><td style="font-weight:500;">${r.secure?'<i class="fa fa-lock" style="color:#dc2626"></i> ':''}${r.type}</td><td><b style="color:var(--text-mut); font-size:12px;">${r.date}</b><br><span style="font-size:14px;">${r.txt}</span></td><td><span class="badge ${badge}">${r.st}</span></td><td>${actionBtn}</td></tr>`; }); c.innerHTML = tblHtml + `</tbody></table></div></div>`; }
+                else if(page === 'grading') { let optWeek = ''; DB.weekList.forEach(w => optWeek += `<option value="${w}">${w}</option>`); c.innerHTML = `<div class="flex-control"><h2>✍️ Chấm Điểm Thi Đua</h2><select id="wSelect" onchange="Features.loadWeekData()" style="flex:1; max-width:200px; margin-bottom:0;">${optWeek}</select><button class="btn btn-blue" onclick="Features.addWeekVersion()">+ Thêm Tuần</button></div><div class="card" style="padding:0; overflow:hidden;"><div class="table-wrap"><table style="margin-top:0;"><thead><tr><th>Ảnh</th><th>Mã HS</th><th>Họ Tên</th><th>Điểm</th><th>Xếp loại</th><th>Ghi chú</th></tr></thead><tbody id="gradeTable"></tbody></table></div></div><button class="btn btn-blue" id="btnSaveGrade" style="margin-top:20px; width:100%" onclick="Features.saveGrades()"><i class="fa fa-save"></i> LƯU KẾT QUẢ CHẤM ĐIỂM</button>`; Features.loadWeekData(); }
+                else if(page === 'my_rank') { const myW = DB.weekly.filter(w => w.sid === CURRENT_USER.u); let rankHtml = `<h2>🏆 Điểm Thi Đua Cá Nhân</h2><div class="card" style="padding:0; overflow:hidden;"><div class="table-wrap"><table style="margin-top:0;"><thead><tr><th>Tuần</th><th>Điểm</th><th>Xếp loại</th><th>Nhận xét</th></tr></thead><tbody>`; if(myW.length === 0) rankHtml += `<tr><td colspan="4" style="color:var(--text-mut);">Chưa có dữ liệu.</td></tr>`; myW.forEach(w => { let b = w.rank === 'Tốt' ? 'bg-ok' : 'bg-wait'; rankHtml += `<tr><td><b>${w.week}</b></td><td style="color:var(--pri); font-weight:800; font-size:18px">${w.score}</td><td><span class="badge ${b}">${w.rank}</span></td><td style="color:var(--text-mut);">${w.note || '-'}</td></tr>`; }); c.innerHTML = rankHtml + `</tbody></table></div></div>`; }
+                else if(page === 'settings') { c.innerHTML = `<h2>🔧 Cài đặt Hệ Thống</h2><div class="card" style="max-width:500px"><label style="font-weight:600; font-size:13px; color:var(--text-mut);">Tên Lớp:</label><input id="set_class" value="${DB.config.className}"><label style="font-weight:600; font-size:13px; color:var(--text-mut);">Tên Trường:</label><input id="set_school" value="${DB.config.schoolName}"><label style="font-weight:600; font-size:13px; color:var(--text-mut);">Niên khóa:</label><input id="set_year" value="${DB.config.year}"><button class="btn btn-blue" id="btnSaveSet" style="margin-top:15px; width:100%" onclick="Features.saveSettings()">LƯU CÀI ĐẶT</button></div>`; }
             }
         };
 
@@ -607,7 +658,7 @@
                         const webUrl = Utils.getWebLink();
                         const desc = `Bài tập **${h.title}** đã hết hạn nộp.\nHệ thống đã tự động **KHÓA** nhận bài.\n\n**📊 THỐNG KÊ:**\n- Đã nộp: ${submittedIds.length}/${STUDENT_LIST.length}\n- Chưa nộp: ${missing.length}\n\n**❌ DANH SÁCH CHƯA NỘP:**\n${missingText}\n\n👉 **[GIÁO VIÊN BẤM VÀO ĐÂY ĐỂ CHẤM BÀI](${webUrl})**`;
                         
-                        await Network.sendToDiscord(false, "⏰ KHÓA BÀI & BÁO CÁO NỘP BÀI", desc);
+                        await Network.sendToDiscord(false, "⏰ KHÓA BÀI & BÁO CÁO", desc);
                     }
                 }
                 if (needSave) await Network.saveData(); 
@@ -638,36 +689,36 @@
                 if(!hw) return;
                 const mySub = hw.subs ? hw.subs.find(x => x.sid === CURRENT_USER.u) : null;
                 const isOverdue = new Date(hw.deadline) < new Date();
-                let content = `<h3 style="margin-top:0; color:var(--pri)">Nộp bài: ${hw.title}</h3>`;
+                let content = `<h3 style="margin-top:0; color:var(--text-main); font-size:20px;">Nộp bài: <span style="color:var(--pri)">${hw.title}</span></h3>`;
                 
                 if(mySub) {
-                    content += `<div style="background:#eef2ff; padding:15px; border-radius:8px; margin-bottom:15px">
+                    content += `<div style="background:#eff6ff; padding:15px; border-radius:10px; margin-bottom:20px; border:1px solid #bfdbfe;">
                                     <b><i class="fa fa-check-circle" style="color:var(--pri)"></i> Em đã nộp bài.</b><br>
-                                    Thời gian nộp: ${Utils.formatDate(mySub.time)}<br>
-                                    Link bài làm: ${mySub.link ? `<a href="${mySub.link}" target="_blank">Xem bài</a>` : 'Không có'}<br>
-                                    Ghi chú: ${mySub.text || 'Không có'}
+                                    <div style="font-size:13px; color:var(--text-mut); margin-top:5px;">Thời gian nộp: ${Utils.formatDate(mySub.time)}</div>
+                                    <div style="font-size:13px; margin-top:5px;">Link bài làm: ${mySub.link ? `<a href="${mySub.link}" target="_blank" style="color:var(--pri); font-weight:500;">Mở xem lại</a>` : 'Không có'}</div>
+                                    <div style="font-size:13px; margin-top:5px;">Ghi chú: ${mySub.text || 'Không có'}</div>
                                 </div>`;
                     if(mySub.grade) {
-                        content += `<div style="background:#fffbe6; padding:15px; border-radius:8px; border-left:4px solid #f39c12">
-                                        <b>Nhận xét của GV:</b> ${mySub.note || ''} <br>
-                                        <b>Điểm/Đánh giá:</b> <span style="font-size:18px; color:#d35400; font-weight:bold">${mySub.grade}</span>
+                        content += `<div style="background:#fef3c7; padding:20px; border-radius:10px; border-left:4px solid #f59e0b;">
+                                        <b style="color:#92400e;">Nhận xét của GV:</b> <span style="color:#b45309;">${mySub.note || 'Không có'}</span> <br><br>
+                                        <b style="color:#92400e;">Điểm số:</b> <span style="font-size:24px; color:#b45309; font-weight:800; margin-left:10px;">${mySub.grade}</span>
                                     </div>`;
                     }
                 } else {
                     if(isOverdue) {
-                        content += `<div style="color:#c0392b; background:#fadbd8; padding:15px; border-radius:8px; text-align:center; font-weight:bold; border: 1px solid #e74c3c;">
+                        content += `<div style="color:#b91c1c; background:#fee2e2; padding:20px; border-radius:10px; text-align:center; font-weight:bold; border: 1px solid #fca5a5;">
                                         🚫 HỆ THỐNG ĐÃ KHÓA BÀI TẬP NÀY<br>
-                                        <small style="font-weight:normal;">Đã hết thời gian nộp bài. Em không thể nộp thêm.</small>
+                                        <small style="font-weight:500; display:block; margin-top:5px; color:#dc2626;">Đã hết thời gian nộp bài. Em không thể nộp thêm.</small>
                                     </div>`;
                     } else {
-                        content += `<label>Link bài làm (Dán link Google Drive ảnh/file của em):</label>
-                                    <input type="url" id="subLink" placeholder="https://...">
-                                    <label>Ghi chú cho giáo viên:</label>
-                                    <textarea id="subText" style="height:60px" placeholder="Em nộp bài ạ..."></textarea>
-                                    <button class="btn btn-blue" id="btnSubmitHwAction" style="width:100%; margin-top:10px" onclick="Features.submitHW('${hw.id}')"><i class="fa fa-upload"></i> XÁC NHẬN NỘP BÀI</button>`;
+                        content += `<label style="font-size:13px; font-weight:600; color:var(--text-mut);">Link bài làm (Dán link Google Drive ảnh/file của em):</label>
+                                    <input type="url" id="subLink" placeholder="https://..." style="background:white; border:2px solid #e2e8f0;">
+                                    <label style="font-size:13px; font-weight:600; color:var(--text-mut);">Ghi chú cho giáo viên:</label>
+                                    <textarea id="subText" style="height:80px; background:white; border:2px solid #e2e8f0;" placeholder="Em nộp bài ạ..."></textarea>
+                                    <button class="btn btn-blue" id="btnSubmitHwAction" style="width:100%; margin-top:10px; padding:15px;" onclick="Features.submitHW('${hw.id}')"><i class="fa fa-upload"></i> XÁC NHẬN NỘP BÀI</button>`;
                     }
                 }
-                content += `<button class="btn" style="background:#ddd; color:#333; width:100%; margin-top:15px" onclick="document.getElementById('viewHwModal').style.display='none'">Đóng</button>`;
+                content += `<button class="btn" style="background:#f1f5f9; color:#333; width:100%; margin-top:15px; box-shadow:none;" onclick="document.getElementById('viewHwModal').style.display='none'">Đóng cửa sổ</button>`;
                 document.getElementById('viewHwContent').innerHTML = content;
                 document.getElementById('viewHwModal').style.display = 'flex';
             },
@@ -698,31 +749,34 @@
             openHwGrade: (hwId) => {
                 const hw = DB.hw.find(x => x.id === hwId);
                 if(!hw) return;
-                let content = `<h3 style="margin-top:0; color:var(--pri)">Chấm bài: ${hw.title}</h3><div style="max-height: 400px; overflow-y:auto">`;
+                let content = `<h3 style="margin-top:0; color:var(--text-main); font-size:20px;">Chấm bài: <span style="color:var(--pri)">${hw.title}</span></h3><div style="max-height: 400px; overflow-y:auto; padding-right:10px;">`;
                 if(!hw.subs || hw.subs.length === 0) {
-                    content += `<p>Chưa có học sinh nào nộp bài.</p>`;
+                    content += `<p style="color:var(--text-mut); text-align:center; padding:20px;">Chưa có học sinh nào nộp bài.</p>`;
                 } else {
                     hw.subs.forEach((sub) => {
                         const isLate = new Date(sub.time) > new Date(hw.deadline);
                         const ava = DB.avatars[sub.sid] || 'https://i.imgur.com/6VBx3io.png';
                         content += `
-                        <div style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:5px">
+                        <div style="border:1px solid #e2e8f0; padding:15px; margin-bottom:15px; border-radius:12px; background:#f8fafc;">
                             <div style="display:flex; justify-content:space-between; align-items:center">
-                                <div style="display:flex; align-items:center; gap:8px">
-                                    <img src="${ava}" style="width:30px; height:30px; border-radius:50%; object-fit:cover; border:1px solid #ddd;">
-                                    <b>${sub.sname} <small>(${sub.sid})</small></b>
+                                <div style="display:flex; align-items:center; gap:10px">
+                                    <img src="${ava}" style="width:35px; height:35px; border-radius:50%; object-fit:cover; border:1px solid #e2e8f0;">
+                                    <b style="font-size:15px;">${sub.sname} <small style="color:var(--text-mut); font-weight:normal;">(${sub.sid})</small></b>
                                 </div>
                             </div>
-                            <div style="font-size:12px; margin-top:10px">Link: ${sub.link ? `<a href="${sub.link}" target="_blank">Mở File</a>` : 'Không có'}</div>
-                            <div style="font-size:12px; background:#f9f9f9; padding:5px; margin:5px 0">HS Ghi chú: ${sub.text || ''}</div>
-                            <div style="display:flex; gap:10px; margin-top:10px">
-                                <input type="text" id="g_${hw.id}_${sub.sid}" value="${sub.grade||''}" placeholder="Điểm" style="margin:0; width:30%">
-                                <input type="text" id="n_${hw.id}_${sub.sid}" value="${sub.note||''}" placeholder="Lời phê GV" style="margin:0; flex:1">
+                            <div style="font-size:13px; margin-top:12px; display:flex; gap:10px; align-items:center;">
+                                <span style="background:#e0f2fe; color:#0369a1; padding:4px 8px; border-radius:6px; font-weight:500;"><i class="fa fa-paperclip"></i> ${sub.link ? `<a href="${sub.link}" target="_blank" style="color:#0369a1; text-decoration:none;">Mở Bài Làm</a>` : 'Không link'}</span>
+                                ${isLate ? '<span class="badge bg-no" style="font-size:10px;">Nộp muộn</span>' : ''}
+                            </div>
+                            <div style="font-size:13px; background:white; padding:10px; margin:10px 0; border-radius:6px; border:1px solid #e2e8f0; color:var(--text-mut);"><b style="color:var(--text-main)">HS Ghi chú:</b> ${sub.text || '...'}</div>
+                            <div style="display:flex; gap:10px; margin-top:15px">
+                                <input type="text" id="g_${hw.id}_${sub.sid}" value="${sub.grade||''}" placeholder="Điểm số" style="margin:0; width:100px; font-weight:bold; color:var(--pri); text-align:center;">
+                                <input type="text" id="n_${hw.id}_${sub.sid}" value="${sub.note||''}" placeholder="Nhập lời phê của giáo viên..." style="margin:0; flex:1">
                             </div>
                         </div>`;
                     });
                 }
-                content += `</div><div style="display:flex; gap:10px; margin-top:15px"><button class="btn" style="background:#ddd; color:#333; flex:1" onclick="document.getElementById('viewHwModal').style.display='none'">Đóng</button>${hw.subs && hw.subs.length > 0 ? `<button id="btnSaveHwGrades" class="btn btn-green" style="flex:2" onclick="Features.saveHwGrades('${hw.id}')"><i class="fa fa-save"></i> Lưu Điểm Chấm</button>` : ''}</div>`;
+                content += `</div><div style="display:flex; gap:10px; margin-top:20px; padding-top:20px; border-top:1px solid #e2e8f0;"><button class="btn" style="background:#f1f5f9; color:#333; flex:1; box-shadow:none;" onclick="document.getElementById('viewHwModal').style.display='none'">Đóng</button>${hw.subs && hw.subs.length > 0 ? `<button id="btnSaveHwGrades" class="btn btn-blue" style="flex:2" onclick="Features.saveHwGrades('${hw.id}')"><i class="fa fa-save"></i> Lưu Điểm Chấm</button>` : ''}</div>`;
                 document.getElementById('viewHwContent').innerHTML = content;
                 document.getElementById('viewHwModal').style.display = 'flex';
             },
@@ -744,39 +798,38 @@
                 alert("Đã lưu điểm bài tập!"); Router.nav('hw_manage');
             },
 
-            addWeekVersion: async () => { const n = prompt("Tên tuần mới:"); if(n && !DB.weekList.includes(n)) { UI.showLoading("Đang xử lý..."); DB.weekList.push(n); await Network.saveData(); UI.hideLoading(); Router.nav('grading'); } },
-            addTKBVersion: async () => { const n = prompt("Tên TKB mới:"); if(n && !DB.scheduleList.includes(n)) { UI.showLoading("Đang xử lý..."); DB.scheduleList.push(n); await Network.saveData(); UI.hideLoading(); Router.nav('schedule'); } },
+            addWeekVersion: async () => { const n = prompt("Tên tuần mới (VD: Tuần 2):"); if(n && !DB.weekList.includes(n)) { UI.showLoading("Đang xử lý..."); DB.weekList.push(n); await Network.saveData(); UI.hideLoading(); Router.nav('grading'); } },
+            addTKBVersion: async () => { const n = prompt("Giai đoạn TKB mới (VD: Học Kỳ 2):"); if(n && !DB.scheduleList.includes(n)) { UI.showLoading("Đang xử lý..."); DB.scheduleList.push(n); await Network.saveData(); UI.hideLoading(); Router.nav('schedule'); } },
             
-            // CẬP NHẬT: HIỂN THỊ THỜI KHÓA BIỂU SÁNG CHIỀU (9 TIẾT)
             loadScheduleView: () => { 
                 const ver = document.getElementById('tkbSelect').value; 
                 const canEdit = (CURRENT_USER.r === 'teacher' || CURRENT_USER.r === 'admin'); 
-                let html = `<div class="table-wrap"><table><thead><tr><th style="width:50px">Buổi</th><th>Tiết</th><th>Thứ 2</th><th>Thứ 3</th><th>Thứ 4</th><th>Thứ 5</th><th>Thứ 6</th><th>Thứ 7</th></tr></thead><tbody>`; 
+                let html = `<div class="table-wrap"><table style="margin-top:0;"><thead><tr><th style="width:50px">Buổi</th><th>Tiết</th><th>Thứ 2</th><th>Thứ 3</th><th>Thứ 4</th><th>Thứ 5</th><th>Thứ 6</th><th>Thứ 7</th></tr></thead><tbody>`; 
                 
                 // BUỔI SÁNG (Tiết 1 đến Tiết 5)
                 for(let i=1; i<=5; i++) { 
                     html += `<tr>`;
-                    if(i===1) html += `<td rowspan="5" style="font-weight:bold; background:#eef2ff; writing-mode: vertical-rl; transform: rotate(180deg); text-align:center; color:var(--pri);">SÁNG</td>`;
-                    html += `<td style="font-weight:bold; background:#f9f9f9">Tiết ${i}</td>`; 
+                    if(i===1) html += `<td rowspan="5" style="font-weight:800; background:#eff6ff; writing-mode: vertical-rl; transform: rotate(180deg); text-align:center; color:var(--pri); letter-spacing:2px;">SÁNG</td>`;
+                    html += `<td style="font-weight:700; background:#f8fafc; color:var(--text-mut)">Tiết ${i}</td>`; 
                     for(let d=2; d<=7; d++) { 
                         const key = `${ver}_d${d}_t${i}`; 
                         const val = (DB.schedule && DB.schedule[key]) ? DB.schedule[key] : ''; 
-                        if(canEdit) html += `<td><input class="tkb-input" id="${key}" value="${val}" placeholder="..."></td>`; 
-                        else html += `<td>${val || '-'}</td>`; 
+                        if(canEdit) html += `<td style="padding:5px;"><input class="tkb-input" id="${key}" value="${val}" placeholder="..."></td>`; 
+                        else html += `<td><span style="background:${val ? '#f1f5f9' : 'transparent'}; padding: 6px 10px; border-radius: 6px; font-weight:500;">${val || '-'}</span></td>`; 
                     } 
                     html += `</tr>`; 
                 } 
 
-                // BUỔI CHIỀU (Tiết 6 đến Tiết 9 - Đại diện cho trái buổi Tiết 1 đến Tiết 4)
+                // BUỔI CHIỀU (Tiết 6 đến Tiết 9)
                 for(let i=6; i<=9; i++) { 
                     html += `<tr>`;
-                    if(i===6) html += `<td rowspan="4" style="font-weight:bold; background:#fffbe6; writing-mode: vertical-rl; transform: rotate(180deg); text-align:center; color:#f39c12;">CHIỀU<br><small style="font-weight:normal">(Trái buổi)</small></td>`;
-                    html += `<td style="font-weight:bold; background:#f9f9f9">Tiết ${i-5}</td>`; 
+                    if(i===6) html += `<td rowspan="4" style="font-weight:800; background:#fffbeb; writing-mode: vertical-rl; transform: rotate(180deg); text-align:center; color:#d97706; letter-spacing:2px;">CHIỀU<br><small style="font-weight:500; letter-spacing:0; font-size:10px; margin-top:5px; display:block;">Trái buổi</small></td>`;
+                    html += `<td style="font-weight:700; background:#f8fafc; color:var(--text-mut)">Tiết ${i-5}</td>`; 
                     for(let d=2; d<=7; d++) { 
                         const key = `${ver}_d${d}_t${i}`; 
                         const val = (DB.schedule && DB.schedule[key]) ? DB.schedule[key] : ''; 
-                        if(canEdit) html += `<td><input class="tkb-input" id="${key}" value="${val}" placeholder="..."></td>`; 
-                        else html += `<td>${val || '-'}</td>`; 
+                        if(canEdit) html += `<td style="padding:5px;"><input class="tkb-input" id="${key}" value="${val}" placeholder="..."></td>`; 
+                        else html += `<td><span style="background:${val ? '#f1f5f9' : 'transparent'}; padding: 6px 10px; border-radius: 6px; font-weight:500;">${val || '-'}</span></td>`; 
                     } 
                     html += `</tr>`; 
                 } 
@@ -785,11 +838,10 @@
                 document.getElementById('tkbContainer').innerHTML = html; 
             },
             
-            // CẬP NHẬT: LƯU TKB TỪ TIẾT 1 ĐẾN TIẾT 9
             saveSchedule: async () => { 
                 const btn = document.getElementById('btnSaveTKB'); 
                 btn.disabled = true; btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang lưu...'; 
-                UI.showLoading("Đang lưu..."); 
+                UI.showLoading("Đang lưu TKB..."); 
                 const ver = document.getElementById('tkbSelect').value; 
                 for(let i=1; i<=9; i++) { 
                     for(let d=2; d<=7; d++) { 
@@ -799,22 +851,22 @@
                 } 
                 await Network.saveData(); 
                 UI.hideLoading(); 
-                btn.disabled = false; btn.innerHTML = '<i class="fa fa-save"></i> Lưu Thời Khóa Biểu này'; 
-                alert("Đã lưu TKB!"); 
+                btn.disabled = false; btn.innerHTML = '<i class="fa fa-save"></i> Lưu Thời Khóa Biểu'; 
+                alert("Đã lưu Thời Khóa Biểu!"); 
             },
 
-            changePassByAdmin: async (uid, uname) => { const newP = prompt(`Mật khẩu mới cho [${uname}]:`); if(!newP) return; UI.showLoading(`Đang xử lý...`); const u = DB.users.find(x => x.u === uid); if(u) { u.p = newP; await Network.saveData(); } UI.hideLoading(); alert("Đổi thành công!"); Router.nav('accounts'); },
-            saveSettings: async () => { const btn = document.getElementById('btnSaveSet'); btn.disabled = true; btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang lưu...'; UI.showLoading("Đang lưu..."); DB.config.className = document.getElementById('set_class').value; DB.config.schoolName = document.getElementById('set_school').value; DB.config.year = document.getElementById('set_year').value; await Network.saveData(); UI.updateConfigText(); UI.hideLoading(); btn.disabled = false; btn.innerHTML = 'LƯU'; alert("Thành công!"); },
+            changePassByAdmin: async (uid, uname) => { const newP = prompt(`Mật khẩu mới cho học sinh [${uname}]:`); if(!newP) return; UI.showLoading(`Đang xử lý...`); const u = DB.users.find(x => x.u === uid); if(u) { u.p = newP; await Network.saveData(); } UI.hideLoading(); alert("Đổi thành công!"); Router.nav('accounts'); },
+            saveSettings: async () => { const btn = document.getElementById('btnSaveSet'); btn.disabled = true; btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang lưu...'; UI.showLoading("Đang lưu cài đặt..."); DB.config.className = document.getElementById('set_class').value; DB.config.schoolName = document.getElementById('set_school').value; DB.config.year = document.getElementById('set_year').value; await Network.saveData(); UI.updateConfigText(); UI.hideLoading(); btn.disabled = false; btn.innerHTML = 'LƯU CÀI ĐẶT'; alert("Thành công!"); },
             
-            renderFormPaper: () => { const t = document.getElementById('fType').value; const a = document.getElementById('paperArea'); const header = `<div class="legal-header"><div class="legal-nation">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div><div class="legal-motto">Độc lập - Tự do - Hạnh phúc</div></div>`; window.updateFooterDate = function(el) { const d = new Date(el.value); if(!isNaN(d.getTime())) { document.getElementById('footerDate').innerText = `Ngày ${d.getDate()} tháng ${d.getMonth()+1} năm ${d.getFullYear()}`; } }; let body = ''; if(t === 'nghi') { body = `<div class="legal-title">ĐƠN XIN NGHỈ HỌC</div><p>Kính gửi: GVCN ${DB.config.className}</p><p>Em tên: <b>${CURRENT_USER.n}</b></p><p>Xin nghỉ từ: <input type="date" id="datePicker" class="date-input" onchange="updateFooterDate(this)"></p><p>Lý do: <input id="fTxt" class="legal-input" style="width:70%" placeholder="..."></p>`; } else if(t === 'tuongtrinh') { body = `<div class="legal-title">BẢN TƯỜNG TRÌNH</div><p>Kính gửi: GVCN</p><p>Em tên: <b>${CURRENT_USER.n}</b></p><p>Ngày: <input type="date" id="datePicker" class="date-input" onchange="updateFooterDate(this)"></p><p>Nội dung: <input id="fTxt" class="legal-input" style="width:100%; margin-top:10px"></p>`; } else { body = `<div class="legal-title">BẢN CAM KẾT</div><p>Kính gửi: GVCN</p><p>Em tên: <b>${CURRENT_USER.n}</b></p><p>Ngày: <input type="date" id="datePicker" class="date-input" onchange="updateFooterDate(this)"></p><p>Cam kết: <input id="fTxt" class="legal-input" style="width:100%; margin-top:10px"></p>`; } a.innerHTML = `<div class="legal-paper">${header}${body}<br><br><div style="text-align:right"><i id="footerDate">Ngày... tháng... năm...</i><br><b>Người làm đơn</b><br><br><br><br>${CURRENT_USER.n}</div></div>`; },
+            renderFormPaper: () => { const t = document.getElementById('fType').value; const a = document.getElementById('paperArea'); const header = `<div class="legal-header"><div class="legal-nation" style="font-weight:700;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div><div class="legal-motto" style="font-weight:600; border-bottom:1px solid #333; display:inline-block; padding-bottom:5px;">Độc lập - Tự do - Hạnh phúc</div></div>`; window.updateFooterDate = function(el) { const d = new Date(el.value); if(!isNaN(d.getTime())) { document.getElementById('footerDate').innerText = `Ngày ${d.getDate()} tháng ${d.getMonth()+1} năm ${d.getFullYear()}`; } }; let body = ''; if(t === 'nghi') { body = `<div class="legal-title">ĐƠN XIN NGHỈ HỌC</div><p>Kính gửi: GVCN lớp <b>${DB.config.className}</b></p><p>Em tên: <b>${CURRENT_USER.n}</b></p><p style="display:flex; align-items:center; gap:10px;">Xin nghỉ từ: <input type="date" id="datePicker" class="date-input" style="width:auto; margin:0; padding:5px 10px; background:white; border:1px solid #ccc; font-family:inherit;" onchange="updateFooterDate(this)"></p><p>Lý do xin nghỉ: <input id="fTxt" class="legal-input" style="width:70%" placeholder="......................................................................."></p>`; } else if(t === 'tuongtrinh') { body = `<div class="legal-title">BẢN TƯỜNG TRÌNH</div><p>Kính gửi: Ban Giám Hiệu / GVCN</p><p>Em tên: <b>${CURRENT_USER.n}</b></p><p style="display:flex; align-items:center; gap:10px;">Vào ngày: <input type="date" id="datePicker" class="date-input" style="width:auto; margin:0; padding:5px 10px; background:white; border:1px solid #ccc; font-family:inherit;" onchange="updateFooterDate(this)"></p><p>Nội dung sự việc: <input id="fTxt" class="legal-input" style="width:100%; margin-top:10px" placeholder="......................................................................."></p>`; } else { body = `<div class="legal-title">BẢN CAM KẾT</div><p>Kính gửi: Giáo viên Chủ nhiệm</p><p>Em tên: <b>${CURRENT_USER.n}</b></p><p style="display:flex; align-items:center; gap:10px;">Ngày vi phạm: <input type="date" id="datePicker" class="date-input" style="width:auto; margin:0; padding:5px 10px; background:white; border:1px solid #ccc; font-family:inherit;" onchange="updateFooterDate(this)"></p><p>Nội dung cam kết: <input id="fTxt" class="legal-input" style="width:100%; margin-top:10px" placeholder="......................................................................."></p>`; } a.innerHTML = `<div class="legal-paper">${header}${body}<br><br><div style="text-align:right; margin-top:20px;"><i id="footerDate">Ngày... tháng... năm...</i><br><b style="margin-top:5px; display:inline-block;">Người làm đơn</b><br><br><br><br>${CURRENT_USER.n}</div></div>`; },
             
             sendForm: async () => { 
                 const txt = document.getElementById('fTxt').value; 
                 const dateVal = document.getElementById('datePicker').value; 
-                if(!txt || !dateVal) return alert('Thiếu thông tin!'); 
+                if(!txt || !dateVal) return alert('Vui lòng chọn ngày và điền nội dung!'); 
                 const btn = document.getElementById('btnSendForm');
                 btn.disabled = true; btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang Gửi...';
-                UI.showLoading("Đang gửi..."); 
+                UI.showLoading("Đang xử lý đơn..."); 
                 
                 const parts = dateVal.split('-');
                 const fmtDate = `${parseInt(parts[2], 10)}/${parseInt(parts[1], 10)}/${parts[0]}`;
@@ -828,68 +880,12 @@
                 await Network.sendToDiscord(isSecure, isSecure ? "🔒 VĂN BẢN BẢO MẬT" : "📝 ĐƠN XIN NGHỈ", `**Học sinh:** ${CURRENT_USER.n}\n**Lớp:** ${DB.config.className}\n**Nội dung:** ${txt}\n\n🔗 **[BẤM VÀO ĐÂY ĐỂ ĐI TỚI TRANG WEB DUYỆT ĐƠN](${webUrl})**`); 
                 
                 UI.hideLoading(); 
-                btn.disabled = false; btn.innerHTML = '<i class="fa fa-paper-plane"></i> GỬI ĐƠN NÀY LÊN GIÁO VIÊN';
-                alert('Thành công!'); Router.nav('mailbox'); 
-            },
-            
-            openReply: (id) => { 
-                currentReplyId = id; selectedStatus = null; 
-                document.getElementById('replyModal').style.display = 'flex'; 
-                document.getElementById('replyTxt').value = ''; 
-                document.getElementById('statusPreview').innerText='Chưa chọn'; 
-                document.getElementById('statusPreview').className='badge bg-wait'; 
-                document.getElementById('statusPreview').style.background = '#eee';
-                document.getElementById('statusPreview').style.color = '#333';
-                
-                const bA = document.getElementById('btnApprove'); const bR = document.getElementById('btnReject');
-                if(bA && bR) { bA.style.opacity = "1"; bA.style.border = "none"; bR.style.opacity = "1"; bR.style.border = "none"; }
-            },
-            
-            selectStatus: (st) => { 
-                selectedStatus = st; 
-                const el = document.getElementById('statusPreview'); 
-                el.innerText = st === 'Đã duyệt' ? 'Sẽ Duyệt' : 'Từ Chối'; 
-                el.className = st === 'Đã duyệt' ? 'badge bg-ok' : 'badge bg-no'; 
-                el.style.background = ''; 
-                el.style.color = 'white';
-                
-                const bA = document.getElementById('btnApprove'); const bR = document.getElementById('btnReject');
-                if(st === 'Đã duyệt') {
-                    bA.style.border = "3px solid #333"; bA.style.opacity = "1";
-                    bR.style.border = "none"; bR.style.opacity = "0.4";
-                } else {
-                    bR.style.border = "3px solid #333"; bR.style.opacity = "1";
-                    bA.style.border = "none"; bA.style.opacity = "0.4";
-                }
-            },
-            
-            submitReplyFinal: async () => { 
-                const note = document.getElementById('replyTxt').value; 
-                if (!selectedStatus) return alert("Vui lòng Bấm Chọn trạng thái (Sẽ Duyệt / Từ chối) trước!"); 
-                const r = DB.reqs.find(x => x.id == currentReplyId); 
-                if(r) { 
-                    const btnSubmit = document.getElementById('btnReplySubmit');
-                    btnSubmit.disabled = true;
-                    btnSubmit.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang xử lý...';
-                    UI.showLoading("Đang ghi nhận..."); 
-                    
-                    r.st = selectedStatus; r.reply = note; 
-                    await Network.saveData(); 
-                    await Network.sendToDiscord(r.secure, selectedStatus === 'Đã duyệt' ? "✅ ĐÃ DUYỆT ĐƠN" : "❌ TỪ CHỐI ĐƠN", `GV đã trả lời.\n**Học sinh:** ${r.sname}\n**Lời nhắn:** ${note}`); 
-                    
-                    UI.hideLoading(); 
-                    btnSubmit.disabled = false;
-                    btnSubmit.innerHTML = '<i class="fa fa-paper-plane"></i> Gửi Phản Hồi';
-                    document.getElementById('replyModal').style.display='none'; 
-                    Router.nav('approve'); 
-                } 
-            },
-            
-            loadWeekData: () => { const w = document.getElementById('wSelect').value; const tb = document.getElementById('gradeTable'); tb.innerHTML = ''; STUDENT_LIST.forEach(s => { const old = DB.weekly.find(x => x.week == w && x.sid == s.id) || {}; const ava = DB.avatars[s.id] || 'https://i.imgur.com/6VBx3io.png'; tb.innerHTML += `<tr><td><img src="${ava}" style="width:30px; height:30px; border-radius:50%; object-fit:cover; border:1px solid #ddd;"></td><td style="font-family:monospace;">${s.id}</td><td><b>${s.name}</b></td><td><input type="number" id="s_${s.id}" value="${old.score||100}" style="width:60px;"></td><td><select id="r_${s.id}"><option ${old.rank=='Tốt'?'selected':''}>Tốt</option><option ${old.rank=='Khá'?'selected':''}>Khá</option><option ${old.rank=='TB'?'selected':''}>TB</option></select></td><td><input type="text" id="n_${s.id}" value="${old.note||''}"></td></tr>`; }); },
-            saveGrades: async () => { const btn = document.getElementById('btnSaveGrade'); btn.disabled = true; btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang lưu...'; UI.showLoading("Đang lưu..."); const w = document.getElementById('wSelect').value; STUDENT_LIST.forEach(s => { const idx = DB.weekly.findIndex(x => x.week == w && x.sid == s.id); if(idx > -1) DB.weekly.splice(idx, 1); DB.weekly.push({ week: w, sid: s.id, score: document.getElementById(`s_${s.id}`).value, rank: document.getElementById(`r_${s.id}`).value, note: document.getElementById(`n_${s.id}`).value }); }); await Network.saveData(); UI.hideLoading(); btn.disabled = false; btn.innerHTML = '<i class="fa fa-save"></i> LƯU ĐIỂM'; alert(`Đã lưu!`); }
+                btn.disabled = false; btn.innerHTML = '<i class="fa fa-paper-plane"></i> GỬI ĐƠN LÊN GIÁO VIÊN';
+                alert('Gửi đơn thành công!'); Router.nav('mailbox'); 
+            }
         };
 
-        // KÍCH HOẠT
+        // KÍCH HOẠT ỨNG DỤNG
         App.init();
 
     </script>
